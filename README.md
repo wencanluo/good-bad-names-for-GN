@@ -7,5 +7,5 @@ Classify the Scientific names database as 'trusted' or 'not trusted'
 
 
 [1]: https://badges.gitter.im/Join%20Chat.svg
-[2]: https://gitter.im/GlobalNamesArchitecture/GlobalNames?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
+[2]: https://gitter.im/wencanluo/good-bad-names-for-GN?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
 
