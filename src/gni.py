@@ -16,9 +16,9 @@ class GNI_DB:
 
 	def get_canonical_forms(self, limit=1000):
 		if limit != None:
-			sql = "SELECT * FROM canonical_forms Limit " + str(limit)
+			sql = "SELECT name FROM canonical_forms Limit " + str(limit)
 		else:
-			sql = "SELECT * FROM canonical_forms"
+			sql = "SELECT name FROM canonical_forms"
 
 		try:
 			# Execute the SQL command
@@ -27,7 +27,7 @@ class GNI_DB:
 			for i in range(N):
 				row = cursor.fetchone()
 				
-				yield row
+				yield row[0]
 		except:
 			print "Error: unable to fecth data"
 			
