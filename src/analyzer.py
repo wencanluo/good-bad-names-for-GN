@@ -1,8 +1,12 @@
 from gni import GNI_DB
 from collections import defaultdict
+import fio
 
 class Analyzer:
 	def __init__(self, db):
+		'''
+		db is an instance of GNI_DB
+		'''
 		self.db = db
 	
 	def get_canonical_forms_length_distribution(self):
@@ -19,6 +23,22 @@ class Analyzer:
 			len_dis[word_count] += 1
 		
 		return len_dis
+	
+	def extract_canonical_forms_by_length(self, datadir):
+		'''
+		'''
+		names = self.db.get_canonical_forms(limit=None)
+		
+		dict = {}
+		for name in names:
+			word_count = len(name.split())
+			if word_count not in dict:
+				dict[word_count] = []
+			
+			dict[word_count].append(name)
+		
+		for length in dict:
+			fio.SaveList(dict[length], datadir + 'name_' + str(length) + '.txt')
 		
 if __name__ == '__main__':
 	import ConfigParser
@@ -30,6 +50,7 @@ if __name__ == '__main__':
 	user = config.get('mysql', 'user')
 	passwd = config.get('mysql', 'passwd')
 	db = config.get('mysql', 'db')
+	datadir = config.get('dir', 'data')
 	
 	db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
 	
@@ -37,10 +58,8 @@ if __name__ == '__main__':
 	
 	import time
 	time_start = time.clock()
-	len_dis = analyzer.get_canonical_forms_length_distribution()
+	analyzer.extract_canonical_forms_by_length(datadir)
 	time_analyzing = time.clock()
 	print "analyzing time: %s" % (time_analyzing - time_start)
 	
-	for i in range(1, max(len_dis.keys())+1):
-		print i, '\t', len_dis[i]
 	
