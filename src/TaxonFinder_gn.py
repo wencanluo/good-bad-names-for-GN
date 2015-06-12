@@ -1,64 +1,45 @@
 #!/usr/bin/env python
-import requests
-import subprocess
-import shlex
+
 import math
 import sys
 import time
 import os
-import difflib
-import json
+
 import fio
 
-def getName(text):
-    url = 'http://taxonfinder.org/api/find?text=' + text
-    content = requests.get(url)
-    data = json.loads(content.text)
-    
-    if len(data) == 0:
-        return ""
-    return data[0]['name']
+datadir = "../../good-bad-names-for-GN/data/"
+taxonfind_dir = "../../node-taxonfinder/"
 
-if __name__ == '__main__':
-    #print getName('The quick Vulpes jumped over the lazy Canis lupus familiaris')
-    #exit(-1)
-    
-    datadir = "../../good-bad-names-for-GN/data/"
-    
-    import time
+import time
+
+for length in [1, 2, 3]:
     time_start = time.clock()
     
+    filename = datadir + 'name_' + str(length) + ".txt"
+    taxonfinder_names = taxonfind_dir + 'name_' + str(length) + ".txt"
     
-    time_traning = time.clock()
-    print "training time: %s" % (time_traning - time_start)
+    lines = fio.ReadFile(filename)
+    lines_taxonfinder = fio.ReadFile(taxonfinder_names)
+    assert(len(lines) == len(lines_taxonfinder))
     
-    for length in [1, 2, 3]:
-        time_start = time.clock()
+    goodnames = []
+    badnames = []
+    partialnames = []
+    for i, line in enumerate(lines):
+        line = line.strip()
+        name = lines_taxonfinder[i].strip()
         
-        filename = datadir + 'name_' + str(length) + ".txt"
-        
-        lines = fio.ReadFile(filename)
-        
-        goodnames = []
-        badnames = []
-        partialnames = []
-        for i, line in enumerate(lines):
-            print i
-            line = line.strip()
-            result = getName(line)
-            name = result
+        if len(name) == 0:
+            badnames.append(line)
             
-            if len(name) == 0:
-                badnames.append(line)
-                
-            elif name != line:
-                partialnames.append(line)
-            else:
-                goodnames.append(line)
+        elif name != line:
+            partialnames.append(line)
+        else:
+            goodnames.append(line)
+    
+    fio.SaveList(badnames, datadir + 'badname_length_' + str(length) + "_byTaxonFiner.txt")
+    fio.SaveList(partialnames, datadir + 'partialgoodname_length_' + str(length) + "_byTaxonFiner.txt")
+    fio.SaveList(goodnames, datadir + 'goodname_length_' + str(length) + "_byTaxonFiner.txt")
         
-        fio.SaveList(badnames, datadir + 'badname_length_' + str(length) + "_byTaxonFinder.txt")
-        fio.SaveList(partialnames, datadir + 'partialgoodname_length_' + str(length) + "_byTaxonFinder.txt")
-        fio.SaveList(goodnames, datadir + 'goodname_length_' + str(length) + "_byTaxonFinder.txt")
-            
-        time_decoding = time.clock()
-        print length, "decoding time: %s" % (time_decoding - time_start)
+    time_decoding = time.clock()
+    print length, "decoding time: %s" % (time_decoding - time_start)
