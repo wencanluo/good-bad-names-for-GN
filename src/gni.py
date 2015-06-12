@@ -43,7 +43,7 @@ class GNI_DB:
 		if limit != None:
 			sql += '\nLimit ' + str(limit)
 		
-		print sql
+		#print sql
 		
 		try:
 			# Execute the SQL command
