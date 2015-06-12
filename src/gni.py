@@ -1,4 +1,5 @@
 import MySQLdb
+from django.core.management.sql import sql_all
 
 class GNI_DB:
 	def __init__(self, host, user, passwd, db):
@@ -30,7 +31,31 @@ class GNI_DB:
 				yield row[0]
 		except:
 			print "Error: unable to fecth data"
-			
+	
+	def get_canonical_forms_with_source_id(self, limit = 1000):
+		sql = 'select canonical_forms.name, name_string_indices.data_source_id, name_string_indices.classification_path \
+			   from name_strings \
+				join canonical_forms\
+					on name_strings.canonical_form_id = canonical_forms.id\
+				join name_string_indices\
+					on name_strings.id = name_string_indices.name_string_id'
+		
+		if limit != None:
+			sql += '\nLimit ' + str(limit)
+		
+		print sql
+		
+		try:
+			# Execute the SQL command
+			cursor = self.execute_sql(sql)
+			N = cursor.rowcount
+			for i in range(N):
+				row = cursor.fetchone()
+				
+				yield row
+		except:
+			print "Error: unable to fecth data"
+		
 	def close(self):
 		self.db.close()
 
@@ -46,7 +71,7 @@ if __name__ == '__main__':
 	db = config.get('mysql', 'db')
 	
 	db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
-	names = db.get_canonical_forms()
+	names = db.get_canonical_forms_with_source_id()
 	
 	for name in names:
 		print name
