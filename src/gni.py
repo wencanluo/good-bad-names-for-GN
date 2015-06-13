@@ -33,28 +33,38 @@ class GNI_DB:
 			print "Error: unable to fecth data"
 	
 	def get_canonical_forms_with_source_id(self, limit = 1000):
-		sql = 'select canonical_forms.name, name_string_indices.data_source_id, name_string_indices.classification_path \
-			   from name_strings \
-				join canonical_forms\
-					on name_strings.canonical_form_id = canonical_forms.id\
-				join name_string_indices\
-					on name_strings.id = name_string_indices.name_string_id'
+		start_n = 0
+		n = 100
 		
-		if limit != None:
-			sql += '\nLimit ' + str(limit)
-		
-		#print sql
-		
-		try:
-			# Execute the SQL command
-			cursor = self.execute_sql(sql)
-			N = cursor.rowcount
-			for i in range(N):
-				row = cursor.fetchone()
+		sql = 'select canonical_forms.name, name_string_indices.data_source_id, name_string_indices.classification_path from name_strings join canonical_forms on name_strings.canonical_form_id = canonical_forms.id join name_string_indices on name_strings.id = name_string_indices.name_string_id '
+						
+		while True:
+			print start_n
+			
+			if limit != None:
+				cur_sql = sql + 'Limit ' + str(start_n) + ',' + str(n)
+			
+			print cur_sql
+			
+			try:
+				# Execute the SQL command
+				cursor = self.execute_sql(cur_sql)
+				N = cursor.rowcount
+				print 'N=', N
 				
-				yield row
-		except:
-			print "Error: unable to fecth data"
+				if N == 0: break
+				
+				for i in range(N):
+					row = cursor.fetchone()
+					
+					yield row
+				
+			except:
+				print "Error: unable to fecth data"
+				
+			if limit != None and (start_n+n) > limit: break
+			
+			start_n = start_n + n
 		
 	def close(self):
 		self.db.close()
@@ -71,7 +81,7 @@ if __name__ == '__main__':
 	db = config.get('mysql', 'db')
 	
 	db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
-	names = db.get_canonical_forms_with_source_id()
+	names = db.get_canonical_forms_with_source_id(limit = 3000)
 	
 	for name in names:
 		print name
