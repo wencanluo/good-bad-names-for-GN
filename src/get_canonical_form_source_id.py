@@ -36,7 +36,7 @@ def select_canonical_form_source_id_row_by_row(db):
     fio.PrintList(head)
     
     start_n = 0
-    n = 100
+    n = 100000
     
     sql = 'select canonical_forms.name, name_string_indices.data_source_id, name_string_indices.classification_path from name_strings join canonical_forms on name_strings.canonical_form_id = canonical_forms.id join name_string_indices on name_strings.id = name_string_indices.name_string_id '
                     
