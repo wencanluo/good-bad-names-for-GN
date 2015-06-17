@@ -1,8 +1,10 @@
 import MySQLdb
+import MySQLdb.cursors
 from django.core.management.sql import sql_all
 
 class GNI_DB:
 	def __init__(self, host, user, passwd, db):
+		#self.db = MySQLdb.connect(host, user, passwd, db, cursorclass = MySQLdb.cursors.SSCursor)
 		self.db = MySQLdb.connect(host, user, passwd, db)
 		
 	def execute_sql(self, sql):
@@ -32,6 +34,62 @@ class GNI_DB:
 		except:
 			print "Error: unable to fecth data"
 	
+	def get_canonical_forms_with_id(self, limit=1000):
+		sql = "SELECT id, name FROM canonical_forms ORDER BY id"
+		
+		if limit != None:
+			sql +=  " Limit " + str(limit)
+		
+		try:
+			# Execute the SQL command
+			cursor = self.execute_sql(sql)
+			N = cursor.rowcount
+			for i in range(N):
+				row = cursor.fetchone()
+				
+				yield row
+		except:
+			print "Error: unable to fecth data"
+	
+	def get_name_string_indices_old(self, limit=1000):
+		sql = "SELECT data_source_id, name_string_id FROM name_string_indices ORDER BY name_string_id"
+		
+		if limit != None:
+			sql +=  " Limit " + str(limit)
+		
+		try:
+			# Execute the SQL command
+			cursor = self.execute_sql(sql)
+			N = cursor.rowcount
+			
+			for i in range(N):
+				row = cursor.fetchone()
+				
+				yield row
+		except:
+			print "Error: unable to fecth data"
+	
+	def get_name_string_indices(self, limit=1000):
+		size = 10000
+		last_id = 0
+		
+		while True:
+			sql = 'SELECT name_string_id, data_source_id, classification_path FROM name_string_indices WHERE name_string_id > '+str(last_id)+' ORDER BY name_string_id LIMIT '+str(size)
+			
+			try:
+				cursor = self.execute_sql(sql)
+				N = cursor.rowcount
+				if N==0:break
+				if limit != None and last_id >= limit: break
+				
+				for i in range(N):
+					row = cursor.fetchone()
+					last_id = row[0]
+					yield row
+			except:
+				print "Error: unable to fecth data"	
+
+							
 	def get_canonical_forms_with_source_id(self, limit = 1000):
 		start_n = 0
 		n = 100

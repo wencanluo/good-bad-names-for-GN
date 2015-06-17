@@ -1,6 +1,21 @@
 from gni import GNI_DB
 import fio
+import os
 
+def get_canonical_forms_with_id(db, output):
+    import sys
+    sys.stdout = open(output, 'w')
+    
+    for row in db.get_canonical_forms_with_id(limit = None):
+        print row[0], '\t', row[1]
+    
+def get_name_string_indices(db, output):
+    import sys
+    sys.stdout = open(output, 'w')
+    
+    for row in db.get_name_string_indices(limit = None):
+        process_name(row)
+    
 def process_name(name):
     row = [name[0], name[1]]
     
@@ -20,10 +35,11 @@ def process_name(name):
     else:
         last_classification_path = classification_path
     
-    if name[0].lower() == last_classification_path.lower():
-        row.append(True)
-    else:
-        row.append(False)
+    row.append(last_classification_path)
+#     if name[0].lower() == last_classification_path.lower():
+#         row.append(True)
+#     else:
+#         row.append(False)
     
     fio.PrintList(row)
     
@@ -79,8 +95,12 @@ if __name__ == '__main__':
     
     #names = db.get_canonical_forms_with_source_id(limit=None)
     
-    select_canonical_form_source_id_row_by_row(db)
+    #select_canonical_form_source_id_row_by_row(db)
     
+    #output = os.path.join(datadir, 'canonical_forms_with_id.txt')
+    #get_canonical_forms_with_id(db, output)
     
+    output = os.path.join(datadir, 'name_string_indices.txt')
+    get_name_string_indices(db, output)
     
     
