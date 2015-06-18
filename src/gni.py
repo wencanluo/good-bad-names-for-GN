@@ -89,40 +89,48 @@ class GNI_DB:
 			except:
 				print "Error: unable to fecth data"	
 
-							
-	def get_canonical_forms_with_source_id(self, limit = 1000):
-		start_n = 0
-		n = 100
+	def get_name_string(self, limit=1000):
+		size = 10000
+		last_id = 0
 		
-		sql = 'select canonical_forms.name, name_string_indices.data_source_id, name_string_indices.classification_path from name_strings join canonical_forms on name_strings.canonical_form_id = canonical_forms.id join name_string_indices on name_strings.id = name_string_indices.name_string_id '
-						
 		while True:
-			print start_n
-			
-			if limit != None:
-				cur_sql = sql + 'Limit ' + str(start_n) + ',' + str(n)
-			
-			print cur_sql
+			sql = 'SELECT id, canonical_form_id FROM name_strings WHERE id > '+str(last_id)+' ORDER BY id LIMIT '+str(size)
 			
 			try:
-				# Execute the SQL command
-				cursor = self.execute_sql(cur_sql)
+				cursor = self.execute_sql(sql)
 				N = cursor.rowcount
-				print 'N=', N
-				
-				if N == 0: break
+				if N==0:break
+				if limit != None and last_id >= limit: break
 				
 				for i in range(N):
 					row = cursor.fetchone()
-					
+					last_id = row[0]
 					yield row
-				
 			except:
-				print "Error: unable to fecth data"
-				
-			if limit != None and (start_n+n) > limit: break
+				print "Error: unable to fecth data"	
+										
+	def get_canonical_forms_with_source_id(self, limit = 1000):
+		'''
+		This doesn't work
+		'''
+		size = 10000
+		last_id = 0
+						
+		while True:
+			sql = 'select canonical_forms.name, name_string_indices.data_source_id, name_string_indices.classification_path, name_string_indices.name_string_id from name_strings join canonical_forms on name_strings.canonical_form_id = canonical_forms.id join name_string_indices on name_strings.id = name_string_indices.name_string_id WHERE name_string_indices.name_string_id > '+str(last_id)+' ORDER BY name_string_indices.name_string_id LIMIT '+str(size)
 			
-			start_n = start_n + n
+			try:
+				cursor = self.execute_sql(sql)
+				N = cursor.rowcount
+				if N==0:break
+				if limit != None and last_id >= limit: break
+				
+				for i in range(N):
+					row = cursor.fetchone()
+					last_id = row[3]
+					yield row
+			except:
+				print "Error: unable to fecth data"	
 		
 	def close(self):
 		self.db.close()

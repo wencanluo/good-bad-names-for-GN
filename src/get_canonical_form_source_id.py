@@ -1,6 +1,7 @@
-from gni import GNI_DB
+#from gni import GNI_DB
 import fio
 import os
+import sys
 
 def get_canonical_forms_with_id(db, output):
     import sys
@@ -15,7 +16,14 @@ def get_name_string_indices(db, output):
     
     for row in db.get_name_string_indices(limit = None):
         process_name(row)
+
+def get_name_string(db, output):
+    import sys
+    sys.stdout = open(output, 'w')
     
+    for row in db.get_name_string(limit = None):
+        print row[0], '\t', row[1]
+            
 def process_name(name):
     row = [name[0], name[1]]
     
@@ -43,41 +51,110 @@ def process_name(name):
     
     fio.PrintList(row)
     
-def select_canonical_form_source_id_row_by_row(db):
+def get_canonical_form_source_id(db, output):
     head = ['canonical_name', 'source_id', 'has_classification_path', 'match_classification_path']
-    file = datadir + 'canonical_form_source_id.txt'
-    import sys
-    sys.stdout = open(file, 'w')
+    sys.stdout = open(output, 'w')
     
     fio.PrintList(head)
     
-    start_n = 0
-    n = 100000
-    
-    sql = 'select canonical_forms.name, name_string_indices.data_source_id, name_string_indices.classification_path from name_strings join canonical_forms on name_strings.canonical_form_id = canonical_forms.id join name_string_indices on name_strings.id = name_string_indices.name_string_id '
-                    
-    while True:
-        cur_sql = sql + 'Limit ' + str(start_n) + ',' + str(n)
-        
-        try:
-            # Execute the SQL command
-            cursor = db.execute_sql(cur_sql)
-            N = cursor.rowcount
-            #print 'N=', N
-            
-            if N == 0: break
-            
-            for i in range(N):
-                names = cursor.fetchone()
-                
-                process_name(names)
-            
-        except:
-            print "Error: unable to fecth data"
-            
-        start_n = start_n + n
-        
+    for row in db.get_canonical_forms_with_source_id(limit = 100):
+        process_name(row)
 
+def combine_canonical_form_source_id(canonical_forms_with_id, name_string_indices, name_string, output):
+    #read canonical_forms_with_id
+    canonical_forms_with_id_dict = {}
+    for line in open(canonical_forms_with_id):
+        line = line.strip()
+        tokens = line.split('\t')
+        canonical_forms_id = int(tokens[0])
+        canonical_forms_name = tokens[1]
+        canonical_forms_with_id_dict[canonical_forms_id] = canonical_forms_name
+    
+    print "canonical_forms_with_id_dict", len(canonical_forms_with_id_dict)
+    
+    #read name_string
+    name_string_dict = {}
+    for line in open(name_string):
+        line = line.strip()
+        #print line
+        
+        tokens = line.split('\t')
+        name_string_id = int(tokens[0])
+        if tokens[1] == 'None': continue
+        
+        canonical_form_id = int(tokens[1])
+        
+        name_string_dict[name_string_id] = canonical_form_id
+    
+    print "name_string_dict", len(name_string_dict)
+        
+    sys.stdout = open(output, 'w')
+    
+    #process name_string_indices
+    for line in open(name_string_indices):
+        line = line.strip()
+        
+        tokens = line.split('\t')
+        name_string_id = int(tokens[0])
+        data_source_id = int(tokens[1])
+        has_classification_path = (tokens[2] == 'True')
+        
+        if name_string_id not in name_string_dict: continue
+        canonical_forms_id = name_string_dict[name_string_id]
+        
+        if canonical_forms_id not in canonical_forms_with_id_dict: continue
+        canonical_forms_name = canonical_forms_with_id_dict[canonical_forms_id]
+        
+        row = [canonical_forms_id, data_source_id, has_classification_path]
+        
+        if has_classification_path == 1:
+            if len(tokens) < 4: 
+                row.append(False)
+            else:
+                if canonical_forms_name.lower() == tokens[3].lower():
+                    row.append(True)
+                else:
+                    row.append(False)
+        else:
+            row.append(False)
+        
+        fio.PrintList(row)
+
+def combine_canonical_form_sources(canonical_forms_with_source_id, combine_canonical_form_with_sources):
+    import json
+    
+    dict = {}
+    
+    #process name_string_indices
+    line_count = 0
+    for line in open(canonical_forms_with_source_id):
+        line = line.strip()
+        
+        tokens = line.split('\t')
+        canonical_forms_id = int(tokens[0])
+        if canonical_forms_id not in dict:
+            dict[canonical_forms_id] = {}
+            dict[canonical_forms_id]['sources'] = []
+            dict[canonical_forms_id]['has_path'] = False
+            dict[canonical_forms_id]['match_path'] = False
+        
+        data_source_id = int(tokens[1])
+        dict[canonical_forms_id]['sources'].append(data_source_id)
+        
+        has_classification_path = (tokens[2] == 'True')
+        dict[canonical_forms_id]['has_path'] = dict[canonical_forms_id]['has_path'] or has_classification_path
+        
+        match_classification_path = (tokens[3] == 'True')
+        dict[canonical_forms_id]['match_path'] = dict[canonical_forms_id]['match_path'] or match_classification_path
+        
+        line_count += 1
+        
+        #if line_count > 10: break
+    print 'total line:', line_count
+    
+    with open(combine_canonical_form_with_sources, 'w') as fout:
+        json.dump(dict, fout, indent=2, encoding='utf-8')
+    
 if __name__ == '__main__':
     import ConfigParser
     
@@ -91,16 +168,20 @@ if __name__ == '__main__':
     
     datadir = config.get('dir', 'data')
     
-    db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
+    #db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
     
-    #names = db.get_canonical_forms_with_source_id(limit=None)
+    canonical_forms_with_id = os.path.join(datadir, 'canonical_forms_with_id.txt')
+    #get_canonical_forms_with_id(db, canonical_forms_with_id)
     
-    #select_canonical_form_source_id_row_by_row(db)
+    name_string_indices = os.path.join(datadir, 'name_string_indices.txt')
+    #get_name_string_indices(db, name_string_indices)
     
-    #output = os.path.join(datadir, 'canonical_forms_with_id.txt')
-    #get_canonical_forms_with_id(db, output)
+    name_string = os.path.join(datadir, 'name_string.txt')
+    #get_name_string(db, name_string)
     
-    output = os.path.join(datadir, 'name_string_indices.txt')
-    get_name_string_indices(db, output)
+    canonical_forms_with_source_id = os.path.join(datadir, 'canonical_forms_id_with_source_id.txt')
+    #combine_canonical_form_source_id(canonical_forms_with_id, name_string_indices, name_string, canonical_forms_with_source_id)
     
+    combine_canonical_form_with_sources = os.path.join(datadir, 'canonical_forms_id_with_sources.json')
+    combine_canonical_form_sources(canonical_forms_with_source_id, combine_canonical_form_with_sources)
     
