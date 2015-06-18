@@ -1,0 +1,95 @@
+id	nomenclaturally_authoritative	nomenclatural_authority	taxonomically_authoritative	taxonomic_authority
+1	No	3	Yes	4
+2	Yes	4	Yes	4
+3	No	3	Yes	3
+4	No	0	No	2
+5	Yes	5	Yes	5
+6	maybe	4	No	4
+7	No	0	No	2
+8	Maybe	3	No	3
+9	myes	4	Yes	4
+10	No	0	No	0
+11	No	1	No	2
+12	No	1	No	2
+93	No	0		
+94	No	1		
+95	No	1	Yes	4
+96	No	0	No	2
+97	No	1	No	
+98	Maybe	3		
+99	No	1	?	
+100	maybe	4	?	3
+101	No	2	No	2
+102	No	1		
+103	No	1	Yes	2
+104	No	1	No	2
+105	No	1	No	1
+106	NoNo	1		
+107	No	0	No	1
+108	No	1	Yes	3
+109	No	1	Yes	3
+110	No	1	Yes	3
+112	probably	4	Yes	5
+113	No	0		
+114	No	1		
+115	Probably	4	Yes	5
+116	No	1	Yes	3
+117	No	1	Yes	3
+118	Maybe	4	Yes	5
+119	No	1		
+120	No	1	No	1
+121	No	3	No	3
+122	No	0	No	0
+123	No	0	No	1
+124	Probably	4	Yes	5
+125	No	3	No	3
+126	No	3		
+127	No	1	Yes	3
+128	No	2	No	2
+129	Maybe	3	No	
+130	Probably	4	No	2
+131	Probably	4	Yes	5
+132	Yes	5	Yes - ish	1
+133	No	3	Yes ish	2
+134	Probably	5	Yes	5
+135	No	3	Yes	2
+136	Probably	4	Yes	3
+137	Probably	4	Yes	3
+138	No	1	No	1
+139	No	3	No	1
+140	Probably	4	Yes	3
+141	Probably	4	Yes	3
+142	No	0		
+143	Probably	4	Yes	3
+144	No	1	No	1
+145	Maybe	3	Yes	3
+146	No	1	No	1
+147	Maybe	4	Yes	4
+148	Probably	4	Yes	3
+149	No	2	No	2
+150	Maybe	4	Yes	4
+151	Yes	5	Yes	5
+152	Probably	4	Yes	5
+153	No	3	No	3
+154	Probably	4	Yes	5
+155	Probably	4	Yes	5
+156	Probably	4	No	3
+157	No	3	Yes	3
+158	Maybe	3	No	2
+159	No	2	No	0
+161	Probably	4	Yes	4
+162	Maybe	4		
+163	No	3	No	2
+164	No	1	No	2
+165	Probably	5	Yes	4
+166	No	3	Yes	4
+167	Yes	5	Yes	3
+168	No	1	No	1
+169	No	1	No	0
+170	No	1	No	2
+171	Maybe	3	Yes	4
+172	Probably	3	Yes	4
+173	Probably	4	Yes	5
+174	Yes	4	Yes	5
+175	No	2	No	2
+176	No	3	No	2
