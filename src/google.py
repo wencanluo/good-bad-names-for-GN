@@ -1,5 +1,6 @@
 #!/usr/bin/python
 #http://virendra.me/googles-did-you-mean-hack-in-python/
+#http://stackoverflow.com/questions/1657570/google-search-from-a-python-app/1657597#1657597
 
 import json
 import urllib
@@ -18,6 +19,10 @@ class GoogleSearchEngine:
   def __init__(self):
     pass
   
+  def is_wikipedia_link(self, url):
+    if 'wikipedia.org' in url: return True
+    return False
+  
   def get_google_hit(self, words):
     query = urllib.urlencode({'q': words})
     url = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s' % query
@@ -26,7 +31,14 @@ class GoogleSearchEngine:
     results = json.loads(search_results)
     
     data = results['responseData']
-    return data['cursor']['estimatedResultCount']
+    
+    hits = data['results']
+    
+    top_hit = None
+    if len(hits) > 0:
+      top_hit = hits[0]['url']
+    
+    return data['cursor']['estimatedResultCount'], top_hit
 
   def getPage(self, url):
     request = urllib2.Request(url)
@@ -62,6 +74,7 @@ class GoogleSearchEngine:
 if __name__ == "__main__":
   import sys
   gse = GoogleSearchEngine()
-  hit = gse.get_google_hit(sys.argv[1])
+  hit, url = gse.get_google_hit(sys.argv[1])
   didyoumean = gse.didYouMean(sys.argv[1])
-  print hit, didyoumean
+  print hit, url, didyoumean
+  print gse.is_wikipedia_link(url)
