@@ -131,6 +131,35 @@ class GNI_DB:
 					yield row
 			except:
 				print "Error: unable to fecth data"	
+	
+	def add_source_authority(self, source_authority):
+		for i, line in enumerate(open(source_authority)):
+			tokens = line.strip().split('\t')
+			if i==0: 
+				head = tokens
+				continue
+			
+			dict = {}
+			
+			for k, v in zip(head, tokens):
+				if len(v) != 0:
+					if k=='id' or k=='nomenclatural_authority' or k=='taxonomic_authority':
+						dict[k] = v
+					else:
+						dict[k] = '"'+ v + '"'
+			
+			#insert it to the data base
+			sql = 'INSERT INTO data_sources_authority (' + ','.join(dict.keys()) + ') VALUES (' +','.join(dict.values())+ ')'
+			print sql
+			
+			try:
+				cursor = self.execute_sql(sql)
+				N = cursor.rowcount
+				print N
+			except:
+				print "Error: unable to insert data"
+				
+		self.db.commit()
 		
 	def close(self):
 		self.db.close()
@@ -146,9 +175,16 @@ if __name__ == '__main__':
 	passwd = config.get('mysql', 'passwd')
 	db = config.get('mysql', 'db')
 	
-	db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
-	names = db.get_canonical_forms_with_source_id(limit = 3000)
+	datadir = config.get('dir', 'data')
 	
-	for name in names:
-		print name
+	import os
+	source_authority = os.path.join(datadir, config.get('knowledge', 'source_authority'))
+	
+	db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
+	db.add_source_authority(source_authority)
+	
+	#names = db.get_canonical_forms_with_source_id(limit = 3000)
+	
+	#for name in names:
+	#	print name
 	
