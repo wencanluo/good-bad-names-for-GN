@@ -121,8 +121,6 @@ def combine_canonical_form_source_id(canonical_forms_with_id, name_string_indice
         fio.PrintList(row)
 
 def combine_canonical_form_sources(canonical_forms_with_source_id, combine_canonical_form_with_sources):
-    import json
-    
     dict = {}
     
     #process name_string_indices
@@ -138,7 +136,7 @@ def combine_canonical_form_sources(canonical_forms_with_source_id, combine_canon
             dict[canonical_forms_id]['has_path'] = False
             dict[canonical_forms_id]['match_path'] = False
         
-        data_source_id = int(tokens[1])
+        data_source_id = tokens[1]
         dict[canonical_forms_id]['sources'].append(data_source_id)
         
         has_classification_path = (tokens[2] == 'True')
@@ -152,8 +150,15 @@ def combine_canonical_form_sources(canonical_forms_with_source_id, combine_canon
         #if line_count > 10: break
     print 'total line:', line_count
     
-    with open(combine_canonical_form_with_sources, 'w') as fout:
-        json.dump(dict, fout, indent=2, encoding='utf-8')
+    sys.stdout = open(combine_canonical_form_with_sources, 'w')
+    
+    for k, v in dict.items():
+        row = [k] #canonical_forms_id
+        row.append(','.join(v['sources']))
+        row.append(v['has_path'])
+        row.append(v['match_path'])
+        
+        fio.PrintList(row)
     
 if __name__ == '__main__':
     import ConfigParser
@@ -182,6 +187,6 @@ if __name__ == '__main__':
     canonical_forms_with_source_id = os.path.join(datadir, 'canonical_forms_id_with_source_id.txt')
     #combine_canonical_form_source_id(canonical_forms_with_id, name_string_indices, name_string, canonical_forms_with_source_id)
     
-    combine_canonical_form_with_sources = os.path.join(datadir, 'canonical_forms_id_with_sources.json')
+    combine_canonical_form_with_sources = os.path.join(datadir, 'canonical_forms_id_with_sources.txt')
     combine_canonical_form_sources(canonical_forms_with_source_id, combine_canonical_form_with_sources)
     

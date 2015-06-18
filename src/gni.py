@@ -159,6 +159,9 @@ class GNI_DB:
 			except:
 				print "Error: unable to insert data"
 				
+		self.commit()
+	
+	def commit(self):
 		self.db.commit()
 		
 	def close(self):
