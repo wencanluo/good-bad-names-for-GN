@@ -39,7 +39,13 @@ class Analyzer:
 		
 		for length in dict:
 			fio.SaveList(dict[length], datadir + 'name_' + str(length) + '.txt')
-		
+	
+	def extract_data_sources(self, output):
+		dict = {}
+		for row in self.db.get_data_sources():
+			dict[row[0]] = row[1]
+		fio.SaveDict(dict, output)
+			
 if __name__ == '__main__':
 	import ConfigParser
 	
@@ -58,7 +64,11 @@ if __name__ == '__main__':
 	
 	import time
 	time_start = time.clock()
-	analyzer.extract_canonical_forms_by_length(datadir)
+	#analyzer.extract_canonical_forms_by_length(datadir)
+	import os
+	data_source_json = os.path.join(datadir,'data_sources.dict')
+	analyzer.extract_data_sources(data_source_json)
+	
 	time_analyzing = time.clock()
 	print "analyzing time: %s" % (time_analyzing - time_start)
 	

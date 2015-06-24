@@ -34,6 +34,20 @@ class GNI_DB:
 		except:
 			print "Error: unable to fecth data"
 	
+	def get_data_sources(self):
+		sql = "SELECT id, title FROM data_sources"
+
+		try:
+			# Execute the SQL command
+			cursor = self.execute_sql(sql)
+			N = cursor.rowcount
+			for i in range(N):
+				row = cursor.fetchone()
+				
+				yield row
+		except:
+			print "Error: unable to fecth data"
+			
 	def get_canonical_forms_with_id(self, limit=1000):
 		sql = "SELECT id, name FROM canonical_forms ORDER BY id"
 		
