@@ -4,14 +4,14 @@ from google import GoogleSearchEngine
 
 gse = GoogleSearchEngine()
 
-def get_google_hit(name, pos, output):
-    hit, url = gse.get_google_hit(name)
-    output.put((pos, hit))
+def single_task(task, arguemnt, pos, output):
+    res = task(arguemnt)
+    output.put((pos, res))
 
-def get_google_hit_parallel(names):
+def task_parallel(task, argruments):
     output = mp.Queue()
     
-    processes = [mp.Process(target=get_google_hit, args=(name, i, output)) for (i, name) in enumerate(names)]
+    processes = [mp.Process(target=single_task, args=(task, argument, i, output)) for (i, argument) in enumerate(argruments)]
     
     for p in processes:
         p.start()
@@ -25,7 +25,6 @@ def get_google_hit_parallel(names):
     
     return results
  
- 
 def get_google_hit_sequential(names):
     results = []
     for name in names:
@@ -38,16 +37,10 @@ if __name__ == "__main__":
     import time
     
     time_start = time.clock()
-    results = get_google_hit_parallel(names)
+    results = task_parallel(gse.get_google_hit, names)
     print results
     time_end = time.clock()
     print "parallel time: %s" % (time_end - time_start)
-    
-    time_start = time.clock()
-    results = get_google_hit_sequential(names)
-    print results
-    time_end = time.clock()
-    print "sequential time: %s" % (time_end - time_start)
     
     
 	

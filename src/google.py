@@ -23,6 +23,13 @@ class GoogleSearchEngine:
     if 'wikipedia.org' in url: return True
     return False
   
+  def get_top_link_url(self, data):
+      hits = data['results']
+      top_hit = None
+      if len(hits) > 0:
+        top_hit = hits[0]['url']
+      return top_hit
+      
   def get_google_hit(self, words):
     query = urllib.urlencode({'q': words})
     url = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s' % query
@@ -30,17 +37,11 @@ class GoogleSearchEngine:
     search_results = search_response.read()
     results = json.loads(search_results)
     
-    
     data = results['responseData']
     if data != None:
-      hits = data['results']
-      top_hit = None
-      if len(hits) > 0:
-        top_hit = hits[0]['url']
-    
-      return data['cursor']['estimatedResultCount'], top_hit
+      return data['cursor']['estimatedResultCount']
     else:
-      return 0, None
+      return 0
 
   def getPage(self, url):
     request = urllib2.Request(url)
@@ -76,7 +77,6 @@ class GoogleSearchEngine:
 if __name__ == "__main__":
   import sys
   gse = GoogleSearchEngine()
-  hit, url = gse.get_google_hit(sys.argv[1])
+  hit = gse.get_google_hit(sys.argv[1])
   didyoumean = gse.didYouMean(sys.argv[1])
-  print hit, url, didyoumean
-  print gse.is_wikipedia_link(url)
+  print hit, didyoumean
