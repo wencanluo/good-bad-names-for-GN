@@ -30,15 +30,17 @@ class GoogleSearchEngine:
     search_results = search_response.read()
     results = json.loads(search_results)
     
+    
     data = results['responseData']
+    if data != None:
+      hits = data['results']
+      top_hit = None
+      if len(hits) > 0:
+        top_hit = hits[0]['url']
     
-    hits = data['results']
-    
-    top_hit = None
-    if len(hits) > 0:
-      top_hit = hits[0]['url']
-    
-    return data['cursor']['estimatedResultCount'], top_hit
+      return data['cursor']['estimatedResultCount'], top_hit
+    else:
+      return 0, None
 
   def getPage(self, url):
     request = urllib2.Request(url)
