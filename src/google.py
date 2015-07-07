@@ -39,9 +39,10 @@ class GoogleSearchEngine:
     
     data = results['responseData']
     if data != None:
-      return data['cursor']['estimatedResultCount']
-    else:
-      return 0
+        if 'estimatedResultCount' in data['cursor']:
+            return data['cursor']['estimatedResultCount']
+    
+    return 0
 
   def getPage(self, url):
     request = urllib2.Request(url)

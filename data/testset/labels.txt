@@ -1,0 +1,65 @@
+good	good
+good canonical	good
+good name	good
+clade identifiable	bad
+concept annotation good canonical	good
+virus	bad
+bad	bad
+corrupted canonical	bad
+hybrid	bad
+not a good name	bad
+not well formed name, but clade identifiable	bad
+annotated good canonical	good
+character issue	bad
+not a well formed name	bad
+issue with character in good	bad
+date with letter, but good	good
+good with character issue	bad
+good with concept annotation	good
+chresonym, well formed name, but indicating a misidentification	bad
+issue with accent, good canonical	bad
+not this species clade identifiable	bad
+issue with &, good canonical	bad
+issue with 'sic' good canonical	bad
+character problem on good	bad
+elided letters, capital on species, otherwise good canonical	bad
+with query and curly parenthesis, good canonical	bad
+good but with character issues	bad
+question, a virus?	bad
+good name but annotated	bad
+good, concept annotation	bad
+virus, hidden behind a good name!	bad
+good name, but with annotations and date annotates	bad
+issue with & good canonical	bad
+c lade identfiable	bad
+clade identifiable = a part of the string is a scientific name but not all	bad
+nice accent good canonical	bad
+hybrid?	bad
+identity uncertain	bad
+not good, the reference is to the phytoplasma, a parasite	bad
+bad unless the term 'organism' means clade identifiable	bad
+issue with character, good canonical	bad
+date letter good canonical	bad
+not that species, the name is correct but the saensu auct means the name has been mis-used	bad
+not good, assume name broken	bad
+clade identifiable, family	bad
+genus name ok, but not a credible string	bad
+annotation, page, with good	bad
+question mark with good	bad
+strange annotation good canonical	bad
+good canonical, really!	bad
+good but concept annotation	bad
+virus ?	bad
+tipula is ok, but i think caffer is not	bad
+issue with &	bad
+good name (good means well formed)	good
+cf, annotated	bad
+annotated good	good
+strange annotation, good canonical	bad
+annotation but good canonical	good
+query annotation on good	bad
+taxonomic annotation attached to good	bad
+annotated, good canonical	good
+not that species, cf means similar to	bad
+not good name, probably common	bad
+not sure, methanosaeta may be good, or may be the source of a symbiont	bad
