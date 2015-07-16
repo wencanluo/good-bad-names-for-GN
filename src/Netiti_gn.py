@@ -30,32 +30,26 @@ nn = NetiNeti(classifier)
 time_traning = time.clock()
 print "training time: %s" % (time_traning - time_start)
 
-for length in [1, 2, 3]:
-    time_start = time.clock()
+time_start = time.clock()
+
+filename = datadir + 'vertnet_names.txt'
+
+lines = fio.ReadFile(filename)
+
+results = []
+for line in lines:
+    line = line.strip()
+    result = nn.find_names(line)
+    name = result[0]
     
-    filename = datadir + 'name_' + str(length) + ".txt"
-    
-    lines = fio.ReadFile(filename)
-    
-    goodnames = []
-    badnames = []
-    partialnames = []
-    for line in lines:
-        line = line.strip()
-        result = nn.find_names(line)
-        name = result[0]
-        
-        if len(name) == 0:
-            badnames.append(line)
-            
-        elif name != line:
-            partialnames.append(line)
-        else:
-            goodnames.append(line)
-    
-    fio.SaveList(badnames, datadir + 'badname_length_' + str(length) + "_bySVM.txt")
-    fio.SaveList(partialnames, datadir + 'partialgoodname_length_' + str(length) + "_bySVM.txt")
-    fio.SaveList(goodnames, datadir + 'goodname_length_' + str(length) + "_bySVM.txt")
-        
-    time_decoding = time.clock()
-    print length, "decoding time: %s" % (time_decoding - time_start)
+    if len(name) == 0:
+        results.append('No')
+    elif name != line:
+        results.append('YesNo')
+    else:
+        results.append('Yes')
+
+fio.SaveList(results, datadir + 'vertnet_names_NetiNeti_NB.txt')
+
+time_decoding = time.clock()
+print "decoding time: %s" % (time_decoding - time_start)
