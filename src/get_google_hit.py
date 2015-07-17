@@ -64,8 +64,6 @@ if __name__ == '__main__':
     
     datadir = config.get('dir', 'data')
     
-    #db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
-    
     canonical_forms_with_id = os.path.join(datadir, 'canonical_forms_with_id.txt')
     canonical_forms_with_google_hit = os.path.join(datadir, 'canonical_forms_with_google_hit.txt')
     get_google_hit(canonical_forms_with_id, canonical_forms_with_google_hit)

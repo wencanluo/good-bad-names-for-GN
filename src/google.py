@@ -58,12 +58,13 @@ class GoogleSearchEngine:
     return data
 
   def didYouMean(self, q):
-    q = str(str.lower(q)).strip()
-    url = "http://www.google.com/search?q=" + urllib.quote(q)
-    html = self.getPage(url)
-    soup = BeautifulSoup(html)
-    ans = soup.find('a', attrs={'class' : 'spell'})
     try:
+        q = str(str.lower(q)).strip()
+        url = "http://www.google.com/search?q=" + urllib.quote(q)
+        html = self.getPage(url)
+        soup = BeautifulSoup(html)
+        ans = soup.find('a', attrs={'class' : 'spell'})
+    
         result = repr(ans.contents)
         result = result.replace("u'","")
         result = result.replace("/","")
@@ -71,7 +72,7 @@ class GoogleSearchEngine:
         result = result.replace("<i>","")
         result = re.sub('[^A-Za-z0-9\s]+', '', result)
         result = re.sub(' +',' ',result)
-    except AttributeError:
+    except:
         result = 1
     return result
     
