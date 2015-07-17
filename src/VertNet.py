@@ -2,6 +2,8 @@ import fio
 import os
 from OrigReader import prData
 from collections import defaultdict
+import json
+import codecs
 
 class VerNetCorpus:
     def __init__(self, excelfile):
@@ -12,7 +14,9 @@ class VerNetCorpus:
         self.source_key = 'validSource'
         self.others = ['validCanonical','sourceURL', 'con-auth','con-sg','con-enc']
         self.types = ['con-ms','con-sp','con-inf','con-ws','con-cap','con-rnk','con-authcap','con-hyb','con-cf','con-qu','con-ab','con-ex']
-        self.feature_keys = ['NetiNeti', 'TaxonFinder', 'has_question_mark', 'all_caplitized']
+        self.parse_features = ['parsed', 'has_canonical', 'has_species', 'has_author', 'has_year', 'hybrid', 'parser_run', 'surrogate', 'has_ignored']
+        self.other_feature_keys = ['NetiNeti', 'TaxonFinder', 'has_question_mark', 'all_caplitized']
+        self.feature_keys = self.parse_features + self.other_feature_keys
         
     def load(self):
         orig = prData(self.excelfile, 0)
@@ -39,6 +43,8 @@ class VerNetCorpus:
             row = []
             for key in keys:
                 value = inst[key]
+                if type(value) == str:
+                    value = value.rstrip()
                 row.append(value)
             body.append(row)
         return body
@@ -133,7 +139,7 @@ class VerNetCorpus:
                 return True
         
         return False
-        
+       
     def extract_features(self):
         names = self.get_names()
         
@@ -148,9 +154,40 @@ class VerNetCorpus:
             
         fio.WriteMatrix('log.txt', f_vec, header=None)
     
-    def write_feature(self, feature_keys = None):
+    def get_parse_features(self, parsedfile):
+        
+        names = self.get_names()
+        
+        head = ['parsed', 'has_canonical', 'has_species', 'has_author', 'has_year', 'hybrid', 'parser_run', 'surrogate', 'has_ignored']
+        body = []
+        for name, line in zip(names, codecs.open(parsedfile, 'r', 'utf-8')):
+            data = json.loads(line.strip(), encoding = 'utf-8')
+            parsed_data = data['scientificName']
+            
+            #print name
+            #print json.dumps(parsed_data, indent=2)
+            
+            parsed = parsed_data['parsed']
+            has_canonical = 'canonical' in parsed_data
+            has_species = 'details' in parsed_data and len(parsed_data['details']) > 0 and 'species' in parsed_data['details'][0]
+            has_basionymAuthorTeam = has_species and 'basionymAuthorTeam' in parsed_data['details'][0]['species']
+            has_author = has_basionymAuthorTeam and 'author' in parsed_data['details'][0]['species']['basionymAuthorTeam']
+            has_year = has_basionymAuthorTeam and 'year' in parsed_data['details'][0]['species']['basionymAuthorTeam']
+            hybrid =  parsed_data['hybrid']==True if 'hybrid' in parsed_data else 'unk'
+            parse_run = parsed_data['parser_run'] if 'parser_run' in parsed_data else 'unk'
+            surrogate = parsed_data['surrogate'] == True if 'surrogate' in parsed_data else 'unk' 
+            has_ignored = 'details' in parsed_data and len(parsed_data['details']) > 0 and 'ignored' in parsed_data['details'][0]
+            
+            row = [parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored]
+            body.append(row)
+            
+        fio.WriteMatrix('log.txt', body, head)
+    
+    def write_feature(self, feature_keys = None, output=None):
         if feature_keys == None:
             feature_keys = self.feature_keys
+        if output == None:
+            output = '_'.join(feature_keys)
         
         head = feature_keys + ['@class@']
         labels = self.get_labels()
@@ -160,15 +197,17 @@ class VerNetCorpus:
             row.append(labels[i])
         types = ['Category']*len(head)
         
-        fio.ArffWriter('../data/weka/' + '_'.join(feature_keys) + '.arff', head, types, 'vernet', body)
+        fio.ArffWriter('../data/weka/' + output + '.arff', head, types, 'vernet', body)
     
     def test_feature(self):
-        self.write_feature(['NetiNeti'])
-        self.write_feature(['TaxonFinder'])
-        self.write_feature(['has_question_mark'])
-        self.write_feature(['all_caplitized'])
-        self.write_feature(['NetiNeti', 'TaxonFinder'])
-        self.write_feature(['NetiNeti', 'TaxonFinder', 'has_question_mark', 'all_caplitized'])
+        #self.write_feature(['NetiNeti'])
+        #self.write_feature(['TaxonFinder'])
+        #self.write_feature(['has_question_mark'])
+        #self.write_feature(['all_caplitized'])
+        #self.write_feature(['NetiNeti', 'TaxonFinder'])
+        #self.write_feature(['NetiNeti', 'TaxonFinder', 'has_question_mark', 'all_caplitized'])
+        self.write_feature(self.parse_features, output='parse')
+        self.write_feature(self.feature_keys, output='parse_netiti_taxonfinder')
         
 if __name__ == '__main__':
     import ConfigParser
@@ -183,5 +222,9 @@ if __name__ == '__main__':
     corpus = VerNetCorpus(vernet_corpus)
     
     #corpus.error_analysis_by_source()
+    
+    parsedfile = os.path.join(datadir, 'testset', 'vernet_parsed.json')
+    #corpus.get_parse_features(parsedfile)
+    
     corpus.test_feature()
     
