@@ -3,6 +3,7 @@ import json
 import fio
 import codecs
 from collections import defaultdict
+from gn_parser import Parser
 
 def extract_parser_features_from_string(data_string):
     data = json.loads(data_string, encoding = 'utf-8')
@@ -72,8 +73,8 @@ def get_simple_bad_names(parser_output, datadir):
         
         dict['all'] += 1
         
+        bad = False
         for i, indictor in enumerate(rule_indictors):
-            bad = False
             if indictor:
                 fout[i].write(id)
                 fout[i].write('\t')
@@ -83,14 +84,44 @@ def get_simple_bad_names(parser_output, datadir):
                 dict[rules[i]] += 1
                 bad = True
             
-            if bad:
-                dict['bad'] += 1
+        if bad:
+            dict['bad'] += 1
     
     for i in range(len(rules)):
         fout[i].close()
         
     fio.SaveDict(dict, os.path.join(datadir, 'bad_name_count.txt'), True)
+
+def gather_data_info(parser_output, datadir):
+    #sys.s = codecs.open(parser_output, 'w', 'utf-8')
+    infos = ['genus', 'species', 'author']
+    author_index = infos.index('author')
+    
+    dicts = []
+    for info in infos:
+        dicts.append(defaultdict(int))
         
+    parser = Parser()
+    for row in db.get_parsed_name_strings(limit = None):
+        id, data = row
+        
+        for info in parser.extract_info(data):
+            if info == None: continue
+            
+            genus, species, authors = info
+            
+            for i, item in enumerate([genus, species]):
+                if item == None: continue
+                dicts[i][item] += 1 
+            
+            if authors != None:
+                for item in authors:
+                    if item == None: continue
+                    dicts[author_index][item] += 1
+                
+    for i, info in enumerate(infos):
+        fio.SaveDictSimple(dicts[i], os.path.join(datadir, 'info_'+info+'.txt'), SortbyValueflag=True)
+           
 if __name__ == '__main__':
     import ConfigParser
     
@@ -107,9 +138,10 @@ if __name__ == '__main__':
     db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
     
     import os
-    parser_output = os.path.join(datadir, 'parser_info_clean.txt')
+    parser_output = os.path.join(datadir, 'parser_info.txt')
     
     #get_parser_data(db, parser_output)
-    get_simple_bad_names(parser_output, datadir)
-    
+    #get_simple_bad_names(parser_output, datadir)
+
+    gather_data_info(parser_output, datadir)
     

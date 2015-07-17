@@ -4,6 +4,37 @@ class Parser:
     def __init__(self):
         pass
     
+    def extract_info(self, data_string):
+        data = json.loads(data_string, encoding = 'utf-8')
+        
+        parsed_data = data['scientificName']
+        
+        parsed = parsed_data['parsed']
+        
+        if 'details' not in parsed_data: 
+            yield None
+        else:
+            for detail in parsed_data['details']:
+                genus = None
+                species = None
+                author = None
+                
+                if 'genus' in detail:
+                    if 'string' in detail['genus']:
+                        genus = detail['genus']['string']
+                
+                if 'species' in detail:
+                    if 'string' in detail['species']:
+                        species = detail['species']['string']
+                
+                if 'species' in detail:
+                    if 'basionymAuthorTeam' in detail['species']:
+                        if 'author' in detail['species']['basionymAuthorTeam']:
+                            author = detail['species']['basionymAuthorTeam']['author']
+                        
+                yield genus, species, author
+        
+        
     def extract_parser_features_from_string(self, data_string):
         data = json.loads(data_string, encoding = 'utf-8')
         
