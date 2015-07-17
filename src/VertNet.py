@@ -6,7 +6,7 @@ import json
 import codecs
 
 class VerNetCorpus:
-    def __init__(self, excelfile):
+    def __init__(self, excelfile=None):
         self.excelfile = excelfile
         
         self.name_key = 'constructedscientificname'
@@ -154,6 +154,25 @@ class VerNetCorpus:
             
         fio.WriteMatrix('log.txt', f_vec, header=None)
     
+    def extract_parser_features_from_string(self, data):
+        parsed_data = data['scientificName']
+        
+        parsed = parsed_data['parsed']
+        
+        name_string = parsed_data['verbatim'] if 'verbatim' in parsed_data else ''
+        
+        has_canonical = 'canonical' in parsed_data
+        has_species = 'details' in parsed_data and len(parsed_data['details']) > 0 and 'species' in parsed_data['details'][0]
+        has_basionymAuthorTeam = has_species and 'basionymAuthorTeam' in parsed_data['details'][0]['species']
+        has_author = has_basionymAuthorTeam and 'author' in parsed_data['details'][0]['species']['basionymAuthorTeam']
+        has_year = has_basionymAuthorTeam and 'year' in parsed_data['details'][0]['species']['basionymAuthorTeam']
+        hybrid =  parsed_data['hybrid']==True if 'hybrid' in parsed_data else 'unk'
+        parse_run = parsed_data['parser_run'] if 'parser_run' in parsed_data else 'unk'
+        surrogate = parsed_data['surrogate'] == True if 'surrogate' in parsed_data else 'unk' 
+        has_ignored = 'details' in parsed_data and len(parsed_data['details']) > 0 and 'ignored' in parsed_data['details'][0]
+        
+        return name_string, parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored 
+        
     def get_parse_features(self, parsedfile):
         
         names = self.get_names()
@@ -162,22 +181,7 @@ class VerNetCorpus:
         body = []
         for name, line in zip(names, codecs.open(parsedfile, 'r', 'utf-8')):
             data = json.loads(line.strip(), encoding = 'utf-8')
-            parsed_data = data['scientificName']
-            
-            #print name
-            #print json.dumps(parsed_data, indent=2)
-            
-            parsed = parsed_data['parsed']
-            has_canonical = 'canonical' in parsed_data
-            has_species = 'details' in parsed_data and len(parsed_data['details']) > 0 and 'species' in parsed_data['details'][0]
-            has_basionymAuthorTeam = has_species and 'basionymAuthorTeam' in parsed_data['details'][0]['species']
-            has_author = has_basionymAuthorTeam and 'author' in parsed_data['details'][0]['species']['basionymAuthorTeam']
-            has_year = has_basionymAuthorTeam and 'year' in parsed_data['details'][0]['species']['basionymAuthorTeam']
-            hybrid =  parsed_data['hybrid']==True if 'hybrid' in parsed_data else 'unk'
-            parse_run = parsed_data['parser_run'] if 'parser_run' in parsed_data else 'unk'
-            surrogate = parsed_data['surrogate'] == True if 'surrogate' in parsed_data else 'unk' 
-            has_ignored = 'details' in parsed_data and len(parsed_data['details']) > 0 and 'ignored' in parsed_data['details'][0]
-            
+            name_string, parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored = self.extract_parser_features_from_string(data)
             row = [parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored]
             body.append(row)
             

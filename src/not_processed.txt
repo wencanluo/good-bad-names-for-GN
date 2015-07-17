@@ -1,0 +1,67 @@
+1456379 	Morellia bipuncta Wiedemann
+nmn, 1830 	True 	True 	True 	True 	False 	False 	2 	unk 	False
+
+9733827 	Neopromachus Giglio
+Tos 	True 	True 	False 	False 	False 	False 	1 	unk 	False
+
+9733877 	Necroscia Audinet
+Serville 1839 	True 	True 	False 	False 	False 	False 	1 	unk 	False
+
+10509411 	Dorylaimia	Inglis 1983 	True 	True 	False 	False 	False 	False 	1 	unk 	False
+
+10526356 	Zelmiarcha Grimaldi, Amorim & Blagodervo 2003: 372	Archizelmiridae 	True 	True 	False 	False 	False 	False 	2 	unk 	False
+
+10536350 	Veriplecia Blagoderov 1999: 12	Paraxymyiidae 	True 	True 	False 	False 	False 	False 	2 	unk 	False
+
+10536351 	Virginiptera Blagoderov & Grimaldi 2007: 15	Paraxymyiidae 	True 	True 	False 	False 	False 	False 	2 	unk 	False
+
+10536354 	Virginiptera certa Blagoderov & Grimaldi, 2007: 16	Paraxymyiidae 	True 	True 	True 	True 	True 	False 	2 	unk 	False
+
+23002209 	Dactylodeictes tomentosus James
+, 1974 	True 	True 	True 	True 	True 	False 	1 	unk 	False
+
+32695202 	Drino
+aureo 	True 	True 	True 	False 	False 	False 	1 	unk 	False
+
+32695203 	Drino
+aureo aurocaudata Bigot, 1888 	True 	True 	True 	False 	False 	False 	1 	unk 	False
+
+38486545 	Lasionycta perplexella	Crabo et Lafontaine, 2009 	True 	True 	True 	True 	True 	False 	1 	unk 	False
+
+38616958 	Argemone mexicana
+
+Wikispecies 	True 	True 	True 	True 	False 	False 	1 	unk 	False
+
+38618226 	Pseudodrephalys hypargus Mabille, 1891
+
+See text. 	True 	True 	True 	True 	True 	False 	2 	unk 	False
+
+38618227 	Pseudodrephalys sohni Burns, 1998
+
+See text. 	True 	True 	True 	True 	True 	False 	2 	unk 	False
+
+38618228 	Pseudodrephalys atinas Mabille, 1888
+
+See text. 	True 	True 	True 	True 	True 	False 	2 	unk 	False
+
+38619074 	Pediocactus winkleri K.D.Heil
+
+Winklers Cacuts photo taken near Clawson, Utah. 	True 	True 	True 	True 	False 	False 	1 	unk 	False
+
+38625718 	Rumex patientia L.
+
+Sources: ING, UniProt, ITIS, IPNI 	True 	True 	True 	True 	False 	False 	1 	unk 	False
+
+38635231 	Castilleja section Oncorhynchus (Lehmann) T.I. Chuang &
+Heckard 	True 	True 	True 	True 	False 	False 	2 	unk 	False
+
+38636776 	Anthoxanthum monticola subsp. alpinum (Swartz ex
+Willdenow) Soreng 	True 	True 	True 	False 	False 	False 	1 	unk 	False
+
+38644004 	Saxifraga mertensiana var. eastwoodiae (Small) Engler
+& Irmscher 	True 	True 	True 	False 	False 	False 	1 	unk 	False
+
+38990431 	Lobocheilos bo
+
+bo (non Popta, 1904) 	True 	True 	True 	False 	False 	False 	2 	unk 	False
+

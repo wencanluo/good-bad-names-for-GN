@@ -102,7 +102,28 @@ class GNI_DB:
 					yield row
 			except:
 				print "Error: unable to fecth data"	
-
+	
+	def get_parsed_name_strings(self, limit=1000):
+		size = 10000
+		last_id = 0
+		
+		while True:
+			sql = 'SELECT id, data FROM parsed_name_strings WHERE id > '+str(last_id)+' ORDER BY id LIMIT '+str(size)
+			
+			try:
+				cursor = self.execute_sql(sql)
+				N = cursor.rowcount
+				if N==0:break
+				if limit != None and last_id >= limit: break
+				
+				for i in range(N):
+					row = cursor.fetchone()
+					last_id = row[0]
+					yield row
+			except Exception as e:
+				print e
+				print "Error: unable to fecth data"	
+				
 	def get_name_string(self, limit=1000):
 		size = 10000
 		last_id = 0
