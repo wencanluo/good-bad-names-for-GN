@@ -11,28 +11,39 @@ class Parser:
         
         parsed = parsed_data['parsed']
         
-        if 'details' not in parsed_data: 
-            yield None
-        else:
+        dict = {}
+        
+        for key in ['genus', 'species', 'authors', 'year', 'canonical']:
+            dict[key] = None
+        
+        if 'canonical' in parsed_data:
+            dict['canonical'] = parsed_data['canonical']
+            
+        if 'details' in parsed_data: 
             for detail in parsed_data['details']:
-                genus = None
-                species = None
-                author = None
-                
                 if 'genus' in detail:
                     if 'string' in detail['genus']:
                         genus = detail['genus']['string']
+                        dict['genus'] = genus
                 
                 if 'species' in detail:
                     if 'string' in detail['species']:
                         species = detail['species']['string']
+                        dict['species'] = species
                 
                 if 'species' in detail:
                     if 'basionymAuthorTeam' in detail['species']:
                         if 'author' in detail['species']['basionymAuthorTeam']:
-                            author = detail['species']['basionymAuthorTeam']['author']
-                        
-                yield genus, species, author
+                            authors = detail['species']['basionymAuthorTeam']['author']
+                            dict['authors'] = authors
+
+                if 'species' in detail:
+                    if 'basionymAuthorTeam' in detail['species']:
+                        if 'year' in detail['species']['basionymAuthorTeam']:
+                            year = detail['species']['basionymAuthorTeam']['year']
+                            dict['year'] = year
+                                               
+        yield dict
         
         
     def extract_parser_features_from_string(self, data_string):

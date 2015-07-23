@@ -4,28 +4,7 @@ import fio
 import codecs
 from collections import defaultdict
 from gn_parser import Parser
-
-def extract_parser_features_from_string(data_string):
-    data = json.loads(data_string, encoding = 'utf-8')
-    
-    parsed_data = data['scientificName']
-    
-    parsed = parsed_data['parsed']
-    
-    name_string = parsed_data['verbatim'] if 'verbatim' in parsed_data else ''
-    
-    has_canonical = 'canonical' in parsed_data
-    has_species = 'details' in parsed_data and len(parsed_data['details']) > 0 and 'species' in parsed_data['details'][0]
-    has_basionymAuthorTeam = has_species and 'basionymAuthorTeam' in parsed_data['details'][0]['species']
-    has_author = has_basionymAuthorTeam and 'author' in parsed_data['details'][0]['species']['basionymAuthorTeam']
-    has_year = has_basionymAuthorTeam and 'year' in parsed_data['details'][0]['species']['basionymAuthorTeam']
-    hybrid =  parsed_data['hybrid']==True if 'hybrid' in parsed_data else 'unk'
-    parse_run = parsed_data['parser_run'] if 'parser_run' in parsed_data else 'unk'
-    surrogate = parsed_data['surrogate'] == True if 'surrogate' in parsed_data else 'unk' 
-    has_ignored = 'details' in parsed_data and len(parsed_data['details']) > 0 and 'ignored' in parsed_data['details'][0]
-    
-    return name_string, parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored 
-    
+ 
 def get_parser_data(db, parser_output):
     #sys.s = codecs.open(parser_output, 'w', 'utf-8')
     import sys
@@ -92,7 +71,7 @@ def get_simple_bad_names(parser_output, datadir):
         
     fio.SaveDict(dict, os.path.join(datadir, 'bad_name_count.txt'), True)
 
-def gather_data_info(parser_output, datadir):
+def gather_data_info(db, datadir):
     #sys.s = codecs.open(parser_output, 'w', 'utf-8')
     infos = ['genus', 'species', 'author']
     author_index = infos.index('author')
@@ -100,7 +79,8 @@ def gather_data_info(parser_output, datadir):
     dicts = []
     for info in infos:
         dicts.append(defaultdict(int))
-        
+    
+    keys = ['genus', 'species', 'authors']
     parser = Parser()
     for row in db.get_parsed_name_strings(limit = None):
         id, data = row
@@ -108,7 +88,7 @@ def gather_data_info(parser_output, datadir):
         for info in parser.extract_info(data):
             if info == None: continue
             
-            genus, species, authors = info
+            genus, species, authors = [info[key] for key in keys]
             
             for i, item in enumerate([genus, species]):
                 if item == None: continue
@@ -121,7 +101,80 @@ def gather_data_info(parser_output, datadir):
                 
     for i, info in enumerate(infos):
         fio.SaveDictSimple(dicts[i], os.path.join(datadir, 'info_'+info+'.txt'), SortbyValueflag=True)
-           
+
+def format_authors_year(authors, year):
+    if authors != None:
+        author_lower = [author.lower() for author in authors]
+    else:
+        author_lower = ['unk']
+    
+    if year == None:
+        year = '0000'
+    
+    return '&'.join(author_lower) + ', ' + year
+
+def get_same_name_but_different_author(db, datadir):
+    parser = Parser()
+    keys = ['authors', 'year', 'canonical']
+    
+    dict = {}
+    
+    for row in db.get_parsed_name_strings(limit = None):
+        id, data = row
+        
+        for info in parser.extract_info(data):
+            if info == None: continue
+            
+            authors, year, canonical = [info[key] for key in keys]
+            
+            if canonical == None: continue
+            if authors == None: continue
+            
+            if canonical not in dict:
+                dict[canonical] = defaultdict(int)
+            
+            dict[canonical][format_authors_year(authors, year)] += 1
+    
+    diff_dict = {}
+    for k, v in dict.items():
+        if len(v) > 1:
+            diff_dict[k] = v
+        
+    with codecs.open(os.path.join(datadir, 'same_name_but_different_author.txt'), 'w', 'utf-8') as fout:
+        json.dump(diff_dict, fout, indent=2)
+    
+def get_different_name_but_same_author(db, datadir):
+    parser = Parser()
+    keys = ['authors', 'year', 'canonical']
+    
+    dict = {}
+    
+    for row in db.get_parsed_name_strings(limit = None):
+        id, data = row
+        
+        for info in parser.extract_info(data):
+            if info == None: continue
+            
+            authors, year, canonical = [info[key] for key in keys]
+            
+            if canonical == None: continue
+            if authors == None: continue
+            if year == None: continue
+            
+            author_year = format_authors_year(authors, year)
+            if author_year not in dict:
+                dict[author_year] = defaultdict(int)
+            
+            dict[author_year][canonical] += 1
+    
+    diff_dict = {}
+    for k, v in dict.items():
+        if len(v) > 1:
+            diff_dict[k] = v
+            
+    with codecs.open(os.path.join(datadir, 'different_name_but_same_author.txt'), 'w', 'utf-8') as fout:
+        json.dump(diff_dict, fout, indent=2)
+                
 if __name__ == '__main__':
     import ConfigParser
     
@@ -143,5 +196,7 @@ if __name__ == '__main__':
     #get_parser_data(db, parser_output)
     #get_simple_bad_names(parser_output, datadir)
 
-    gather_data_info(parser_output, datadir)
+    #gather_data_info(db, datadir)
+    #get_same_name_but_different_author(db, datadir)
+    get_different_name_but_same_author(db, datadir)
     
