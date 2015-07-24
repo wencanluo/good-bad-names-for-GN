@@ -102,7 +102,7 @@ def gather_data_info(db, datadir):
     for i, info in enumerate(infos):
         fio.SaveDictSimple(dicts[i], os.path.join(datadir, 'info_'+info+'.txt'), SortbyValueflag=True)
 
-def format_authors_year(authors, year):
+def format_authors_year2(authors, year):
     if authors != None:
         author_lower = [author.lower() for author in authors]
     else:
@@ -113,6 +113,13 @@ def format_authors_year(authors, year):
     
     return '&'.join(author_lower) + ', ' + year
 
+def format_authors_year(authors, year):
+    dict = {}
+    dict['authors'] = authors
+    dict['year'] = year
+    
+    return json.dumps(dict)
+    
 def get_same_name_but_different_author(db, datadir):
     parser = Parser()
     keys = ['authors', 'year', 'canonical']
@@ -129,6 +136,7 @@ def get_same_name_but_different_author(db, datadir):
             
             if canonical == None: continue
             if authors == None: continue
+            if year == None: continue
             
             if canonical not in dict:
                 dict[canonical] = defaultdict(int)
@@ -142,7 +150,7 @@ def get_same_name_but_different_author(db, datadir):
         
     with codecs.open(os.path.join(datadir, 'same_name_but_different_author.txt'), 'w', 'utf-8') as fout:
         json.dump(diff_dict, fout, indent=2)
-    
+        
 def get_different_name_but_same_author(db, datadir):
     parser = Parser()
     keys = ['authors', 'year', 'canonical']
@@ -197,6 +205,7 @@ if __name__ == '__main__':
     #get_simple_bad_names(parser_output, datadir)
 
     #gather_data_info(db, datadir)
-    #get_same_name_but_different_author(db, datadir)
-    get_different_name_but_same_author(db, datadir)
+    get_same_name_but_different_author(db, datadir)
+    #get_different_name_but_same_author(db, datadir)
+    
     
