@@ -102,6 +102,32 @@ def gather_data_info(db, datadir):
     for i, info in enumerate(infos):
         fio.SaveDictSimple(dicts[i], os.path.join(datadir, 'info_'+info+'.txt'), SortbyValueflag=True)
 
+def gather_data_info_genus_species(db, datadir):
+    #sys.s = codecs.open(parser_output, 'w', 'utf-8')
+    infos = ['genus', 'species']
+    
+    dict = defaultdict(int)
+    
+    keys = ['genus', 'species']
+    parser = Parser()
+    for row in db.get_parsed_name_strings(limit = None):
+        id, data = row
+        
+        for info in parser.extract_info(data):
+            if info == None: continue
+            
+            genus, species = [info[key] for key in keys]
+            
+            if genus == None: continue
+            if species == None: continue
+            
+            dict[format_genus_species(genus, species)] += 1
+                
+    fio.SaveDictSimple(dict, os.path.join(datadir, 'info_genus_species.txt'), SortbyValueflag=True)
+
+def format_genus_species(genus, species):
+    return genus + ' ' + species
+            
 def format_authors_year2(authors, year):
     if authors != None:
         author_lower = [author.lower() for author in authors]
@@ -204,8 +230,9 @@ if __name__ == '__main__':
     #get_parser_data(db, parser_output)
     #get_simple_bad_names(parser_output, datadir)
 
-    #gather_data_info(db, datadir)
-    get_same_name_but_different_author(db, datadir)
+    gather_data_info_genus_species(db, datadir)
+    
+    #get_same_name_but_different_author(db, datadir)
     #get_different_name_but_same_author(db, datadir)
     
     

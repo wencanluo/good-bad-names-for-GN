@@ -187,6 +187,9 @@ class VerNetCorpus:
             
         fio.WriteMatrix('log.txt', body, head)
     
+    def get_misspelling_features(self):
+        pass
+    
     def write_feature(self, feature_keys = None, output=None):
         if feature_keys == None:
             feature_keys = self.feature_keys
