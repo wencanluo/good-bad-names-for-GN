@@ -12,6 +12,16 @@ def get_names(input):
         names.append(name)
     return names
 
+def get_rank_dict(input):
+    dict = {}
+    for i, line in enumerate(codecs.open(input, 'r', 'utf-8')):
+        tokens = line.rstrip('\r\n').split('\t')
+        name = tokens[0].strip()
+        
+        dict[name] = i+1
+        
+    return dict
+
 def get_dict(input):
     dict = {}
     for line in codecs.open(input, 'r', 'utf-8'):
@@ -23,9 +33,12 @@ def get_dict(input):
         else:
             dict[name] = None
         
-    return dict    
+    return dict
     
 def check_google(names, dict_name_lower):
+    '''
+    check whether the google suggestion is among the predefined name list
+    '''
     for name in names.split():
         if name in dict_name_lower:
             return True
@@ -33,6 +46,9 @@ def check_google(names, dict_name_lower):
     return False
 
 def check_combine(names_google, names_ld):
+    '''
+    check whether the google and dl give the same suggestion
+    '''
     names_ld = [name.lower() for name in names_ld.split()]
     for name in names_google.split():
         if name in names_ld:

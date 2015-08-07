@@ -110,7 +110,7 @@ def gather_data_info_genus_species(db, datadir):
     
     keys = ['genus', 'species']
     parser = Parser()
-    for row in db.get_parsed_name_strings(limit = None):
+    for row in db.get_parsed_name_strings(limit = 100):
         id, data = row
         
         for info in parser.extract_info(data):
@@ -176,6 +176,42 @@ def get_same_name_but_different_author(db, datadir):
         
     with codecs.open(os.path.join(datadir, 'same_name_but_different_author.txt'), 'w', 'utf-8') as fout:
         json.dump(diff_dict, fout, indent=2)
+
+def get_same_name_but_different_author_for_VertNet(db, datadir, vernet_canonical):
+    parser = Parser()
+    keys = ['authors', 'year', 'canonical']
+    
+    with codecs.open(vernet_canonical, 'r', 'utf-8') as fin:
+        vernet_names = json.load(fin)
+    
+    cannoical_dict = {}
+    for k, v in vernet_names.items():
+        cannoical_dict[v] = k
+    
+    dict = {}
+    
+    for row in db.get_parsed_name_strings(limit = None):
+        id, data = row
+        
+        for info in parser.extract_info(data):
+            if info == None: continue
+            
+            authors, year, canonical = [info[key] for key in keys]
+            
+            if canonical == None: continue
+            if authors == None: continue
+            if year == None: continue
+            
+            if canonical not in cannoical_dict: continue
+            print canonical
+            
+            if canonical not in dict:
+                dict[canonical] = defaultdict(int)
+            
+            dict[canonical][format_authors_year(authors, year)] += 1
+    
+    with codecs.open(os.path.join(datadir, 'same_name_but_different_author_vertnet.json'), 'w', 'utf-8') as fout:
+        json.dump(dict, fout, indent=2)
         
 def get_different_name_but_same_author(db, datadir):
     parser = Parser()
@@ -230,9 +266,11 @@ if __name__ == '__main__':
     #get_parser_data(db, parser_output)
     #get_simple_bad_names(parser_output, datadir)
 
-    gather_data_info_genus_species(db, datadir)
+    #gather_data_info_genus_species(db, datadir)
     
     #get_same_name_but_different_author(db, datadir)
     #get_different_name_but_same_author(db, datadir)
     
+    vernet_canonical = os.path.join(datadir, 'vernet_canonical.json')
     
+    get_same_name_but_different_author_for_VertNet(db, datadir, vernet_canonical)
