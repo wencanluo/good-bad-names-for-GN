@@ -1,4 +1,4 @@
-import fio
+import file_util as fio
 import os
 from OrigReader import prData
 from collections import defaultdict
@@ -12,7 +12,7 @@ from algorithm import lcs
 from get_parser_data import format_genus_species
 from gn_parser import Parser
 
-class VerNetCorpus:
+class VertNetCorpus:
     def __init__(self, excelfile=None):
         self.excelfile = excelfile
         self.parser = Parser()

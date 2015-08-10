@@ -1,18 +1,20 @@
 from gni import GNI_DB
 import json
-import fio
+import file_util as fio
 import codecs
 from collections import defaultdict
 from gn_parser import Parser
- 
+import sys
+
 def get_parser_data(db, parser_output):
     #sys.s = codecs.open(parser_output, 'w', 'utf-8')
     import sys
     sys.stdout = codecs.open(parser_output, 'w', 'utf-8')
     
+    parser = Parser()
     for row in db.get_parsed_name_strings(limit = None):
         id, data = row
-        name_string, parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored = extract_parser_features_from_string(data)
+        name_string, parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored = parser.extract_parser_features_from_string(data)
         
         name_string = name_string.replace('\t', ' ')
         name_string = name_string.replace('\n', ' ')
@@ -71,6 +73,114 @@ def get_simple_bad_names(parser_output, datadir):
         
     fio.SaveDict(dict, os.path.join(datadir, 'bad_name_count.txt'), True)
 
+def get_all_name_strings(parser_output, output):
+    fout = codecs.open(output, 'w', 'utf-8')
+    
+    line_count = 0
+    for line in codecs.open(parser_output, 'r', 'utf-8'):
+        row = line.split('\t')
+        
+        try:
+            [id, name_string, parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored] = row
+            
+            line_count += 1
+            #fout.write(id)
+            #fout.write('\t')
+            fout.write(name_string)
+            fout.write('\r\n')
+            
+            #if line_count > 100: break
+            
+        except ValueError:
+            print line
+            continue
+    
+    print "total name", line_count
+    
+    fout.close()
+
+def check_id_order(all_name_string_id):
+    old_id = 0
+    for line in open(all_name_string_id):
+        line = line.rstrip('\r\n')
+        
+        tokens = line.split('\t')
+        name_string_id, data_source_id, has_classification_path, is_synonym = tokens
+        name_string_id = int(name_string_id)
+        
+        if name_string_id < old_id:
+            print '@'
+            break
+        
+        old_id = name_string_id
+    
+    print "good"
+        
+    
+def combine_name_sources(ids_file, all_name_string_id, all_name_strings_id_combined):
+    old_id = 0
+    
+    sys.stdout = codecs.open(all_name_strings_id_combined, 'w', 'utf-8')
+    
+    dict = None
+    #process name_string_indices
+    line_count = 0
+    for line in open(all_name_string_id):
+        line = line.rstrip('\r\n')
+        
+        tokens = line.split('\t')
+        name_string_id, data_source_id, has_classification_path, is_synonym = tokens
+        name_string_id = int(name_string_id)
+        
+        if name_string_id != old_id:
+            #save dict
+            if dict != None:
+                row = [old_id, ','.join(dict['s']), dict['c'], dict['n']] #name_string_id
+                fio.PrintList(row)
+    
+            dict = {'s':[], 'c':False, 'n':False}
+            
+        dict['s'].append(data_source_id)
+        dict['c'] = dict['c'] or (has_classification_path == 'True')
+        dict['n'] = dict['n'] or (is_synonym == 'True')
+        
+        old_id = name_string_id
+        
+        line_count += 1
+        
+        #if line_count > 10: break
+        
+    row = [old_id, ','.join(dict['s']), dict['c'], dict['n']] #name_string_id
+    fio.PrintList(row)
+    
+    sys.stdout.close()
+
+def get_all_name_strings_id(parser_output, output):
+    fout = codecs.open(output, 'w', 'utf-8')
+    
+    line_count = 0
+    for line in codecs.open(parser_output, 'r', 'utf-8'):
+        row = line.split('\t')
+        
+        try:
+            [id, name_string, parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored] = row
+            
+            line_count += 1
+            #fout.write(id)
+            #fout.write('\t')
+            fout.write(id)
+            fout.write('\r\n')
+            
+            #if line_count > 100: break
+            
+        except ValueError:
+            print line
+            continue
+    
+    print "total name", line_count
+    
+    fout.close()
+        
 def gather_data_info(db, datadir):
     #sys.s = codecs.open(parser_output, 'w', 'utf-8')
     infos = ['genus', 'species', 'author']
@@ -169,13 +279,15 @@ def get_same_name_but_different_author(db, datadir):
             
             dict[canonical][format_authors_year(authors, year)] += 1
     
+    '''
     diff_dict = {}
     for k, v in dict.items():
         if len(v) > 1:
             diff_dict[k] = v
-        
-    with codecs.open(os.path.join(datadir, 'same_name_but_different_author.txt'), 'w', 'utf-8') as fout:
-        json.dump(diff_dict, fout, indent=2)
+    '''
+    
+    with codecs.open(os.path.join(datadir, 'same_name_but_different_author_all.txt'), 'w', 'utf-8') as fout:
+        json.dump(dict, fout, indent=2)
 
 def get_same_name_but_different_author_for_VertNet(db, datadir, vernet_canonical):
     parser = Parser()
@@ -271,6 +383,15 @@ if __name__ == '__main__':
     #get_same_name_but_different_author(db, datadir)
     #get_different_name_but_same_author(db, datadir)
     
-    vernet_canonical = os.path.join(datadir, 'vernet_canonical.json')
+    #vernet_canonical = os.path.join(datadir, 'vernet_canonical.json')
     
-    get_same_name_but_different_author_for_VertNet(db, datadir, vernet_canonical)
+    #get_same_name_but_different_author_for_VertNet(db, datadir, vernet_canonical)
+    
+    all_name_string_id = os.path.join(datadir, 'name_string_all_indices.txt')
+    #get_all_name_strings_id(parser_output, all_name_string_id)
+    
+    id_file = os.path.join(datadir, 'all_name_strings_id.txt')
+    all_name_strings_id_combined = os.path.join(datadir, 'all_name_strings_id_combined.txt')
+    combine_name_sources(id_file, all_name_string_id, all_name_strings_id_combined)
+    
+    #check_id_order(all_name_string_id)

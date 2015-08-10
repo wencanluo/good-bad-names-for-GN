@@ -1,5 +1,5 @@
 import sys, os
-import fio
+import file_util as fio
 import codecs
 from collections import defaultdict
 

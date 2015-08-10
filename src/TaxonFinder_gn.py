@@ -4,33 +4,34 @@ import math
 import sys
 import time
 import os
-
+import codecs
 import fio
 
-input = "../../good-bad-names-for-GN/data/vertnet_names.txt"
-taxonfind_output = "../../good-bad-names-for-GN/data/vertnet_names_taxonfinder_raw.txt"
+import itertools as it
+
+input = "../../good-bad-names-for-GN/data/all_name_strings.txt"
+taxonfind_output = "../../good-bad-names-for-GN/data/all_name_strings.taxon.output"
+output = "../../good-bad-names-for-GN/data/all_name_strings.taxon"
 
 import time
 
 time_start = time.clock()
 
-lines = fio.ReadFile(input)
-lines_taxonfinder = fio.ReadFile(taxonfind_output)
-assert(len(lines) == len(lines_taxonfinder))
+fout = codecs.open(output, 'w', 'utf-8')
 
 results = []
-for i, line in enumerate(lines):
+for line, name in it.izip(codecs.open(input, 'r', 'utf-8'), codecs.open(taxonfind_output, 'r', 'utf-8')):
     line = line.strip()
-    name = lines_taxonfinder[i].strip()
+    name = name.strip()
     
     if len(name) == 0:
-        results.append('No')
+        fout.write('No\r\n')
     elif name != line:
-        results.append('YesNo')
+        fout.write('YesNo\r\n')
     else:
-        results.append('Yes')
+        fout.write('Yes\r\n')
 
-fio.SaveList(results, '../../good-bad-names-for-GN/data/vertnet_names_TaxonFinder.txt')
-    
+fout.close()
+   
 time_decoding = time.clock()
 print "decoding time: %s" % (time_decoding - time_start)

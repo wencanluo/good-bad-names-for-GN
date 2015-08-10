@@ -64,31 +64,13 @@ class GNI_DB:
 				yield row
 		except:
 			print "Error: unable to fecth data"
-	
-	def get_name_string_indices_old(self, limit=1000):
-		sql = "SELECT data_source_id, name_string_id FROM name_string_indices ORDER BY name_string_id"
 		
-		if limit != None:
-			sql +=  " Limit " + str(limit)
-		
-		try:
-			# Execute the SQL command
-			cursor = self.execute_sql(sql)
-			N = cursor.rowcount
-			
-			for i in range(N):
-				row = cursor.fetchone()
-				
-				yield row
-		except:
-			print "Error: unable to fecth data"
-	
 	def get_name_string_indices(self, limit=1000):
 		size = 10000
 		last_id = 0
 		
 		while True:
-			sql = 'SELECT name_string_id, data_source_id, classification_path FROM name_string_indices WHERE name_string_id > '+str(last_id)+' ORDER BY name_string_id LIMIT '+str(size)
+			sql = 'SELECT name_string_id, data_source_id, classification_path, taxon_id, accepted_taxon_id, synonym FROM name_string_indices WHERE name_string_id > '+str(last_id)+' ORDER BY name_string_id LIMIT '+str(size)
 			
 			try:
 				cursor = self.execute_sql(sql)

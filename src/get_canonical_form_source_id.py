@@ -1,4 +1,4 @@
-#from gni import GNI_DB
+from gni import GNI_DB
 import fio
 import os
 import sys
@@ -14,8 +14,25 @@ def get_name_string_indices(db, output):
     import sys
     sys.stdout = open(output, 'w')
     
-    for row in db.get_name_string_indices(limit = None):
-        process_name(row)
+    for data in db.get_name_string_indices(limit = None):
+        name_string_id, data_source_id, classification_path, taxon_id, accepted_taxon_id, synonym = data
+        
+        has_classification_path = False
+        
+        if classification_path != None:
+            classification_path = classification_path.strip()
+        else:
+            classification_path = ""
+        
+        if len(classification_path) > 0:
+            has_classification_path = True
+        
+        is_synonym = False
+        if taxon_id != accepted_taxon_id:  is_synonym = True
+        
+        row = [name_string_id, data_source_id, has_classification_path, is_synonym]
+        
+        fio.PrintList(row)
 
 def get_name_string(db, output):
     import sys
@@ -173,13 +190,13 @@ if __name__ == '__main__':
     
     datadir = config.get('dir', 'data')
     
-    #db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
+    db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
     
     canonical_forms_with_id = os.path.join(datadir, 'canonical_forms_with_id.txt')
     #get_canonical_forms_with_id(db, canonical_forms_with_id)
     
-    name_string_indices = os.path.join(datadir, 'name_string_indices.txt')
-    #get_name_string_indices(db, name_string_indices)
+    name_string_indices = os.path.join(datadir, 'name_string_all_indices.txt')
+    get_name_string_indices(db, name_string_indices)
     
     name_string = os.path.join(datadir, 'name_string.txt')
     #get_name_string(db, name_string)
@@ -188,5 +205,5 @@ if __name__ == '__main__':
     #combine_canonical_form_source_id(canonical_forms_with_id, name_string_indices, name_string, canonical_forms_with_source_id)
     
     combine_canonical_form_with_sources = os.path.join(datadir, 'canonical_forms_id_with_sources.txt')
-    combine_canonical_form_sources(canonical_forms_with_source_id, combine_canonical_form_with_sources)
+    #combine_canonical_form_sources(canonical_forms_with_source_id, combine_canonical_form_with_sources)
     
