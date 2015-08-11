@@ -99,6 +99,28 @@ def get_all_name_strings(parser_output, output):
     
     fout.close()
 
+def get_all_ids(parser_output, output):
+    fout = codecs.open(output, 'w', 'utf-8')
+    
+    line_count = 0
+    for line in codecs.open(parser_output, 'r', 'utf-8'):
+        row = line.split('\t')
+        
+        try:
+            [id, name_string, parsed, has_canonical, has_species, has_author, has_year, hybrid, parse_run, surrogate, has_ignored] = row
+            
+            line_count += 1
+            fout.write(id)
+            fout.write('\r\n')
+            
+        except ValueError:
+            print line
+            continue
+    
+    print "total name", line_count
+    
+    fout.close()
+    
 def check_id_order(all_name_string_id):
     old_id = 0
     for line in open(all_name_string_id):
@@ -375,6 +397,8 @@ if __name__ == '__main__':
     import os
     parser_output = os.path.join(datadir, 'parser_info.txt')
     
+    id_file = os.path.join(datadir, 'all_name_strings.id_list')
+    get_all_ids(parser_output, id_file)
     #get_parser_data(db, parser_output)
     #get_simple_bad_names(parser_output, datadir)
 
@@ -390,8 +414,8 @@ if __name__ == '__main__':
     all_name_string_id = os.path.join(datadir, 'name_string_all_indices.txt')
     #get_all_name_strings_id(parser_output, all_name_string_id)
     
-    id_file = os.path.join(datadir, 'all_name_strings_id.txt')
+    
     all_name_strings_id_combined = os.path.join(datadir, 'all_name_strings_id_combined.txt')
-    combine_name_sources(id_file, all_name_string_id, all_name_strings_id_combined)
+    #combine_name_sources(id_file, all_name_string_id, all_name_strings_id_combined)
     
     #check_id_order(all_name_string_id)
