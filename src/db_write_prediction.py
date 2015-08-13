@@ -94,6 +94,11 @@ def add_simplebadnames(db):
     db.commit()
     
     print "total count:", count
+
+def get_weka_files(db):
+    batch_size = 100
+    
+    
     
 if __name__ == '__main__':
     import ConfigParser

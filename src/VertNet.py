@@ -6,6 +6,8 @@ import json
 import codecs
 import get_possible_miss_spelled_name_combine as google_dl
 import numpy as np
+import MySQLdb
+from gni import GNI_DB
 
 from algorithm import lcs
 
@@ -31,11 +33,14 @@ class VertNetCorpus:
         self.authorship_features =     ['year_match', 'year_not_match', 'author_match', 'author_not_match', 'year_match_bigger', 'author_match_bigger']
         self.authorship_feature_types = ['Continuous', 'Continuous',     'Continuous',   'Continuous',       'Category',          'Category']
         
+        self.classification_features =      ['has_classification_path', 'synonym',      'data_sources']
+        self.classification_feature_types = ['Category',                'Category',     'Continuous']
+        
         self.other_features = ['NetiNeti', 'TaxonFinder', 'has_question_mark', 'all_caplitized']
         self.other_feature_types = ['Category']*len(self.other_features)
         
-        self.feature_keys = self.parse_features + self.other_features + self.miss_spelling_features + self.authorship_features
-        self.feature_types = self.parse_feature_types + self.other_feature_types + self.miss_spelling_feature_types + self.authorship_feature_types
+        self.feature_keys = self.parse_features + self.other_features + self.miss_spelling_features + self.authorship_features + self.classification_features
+        self.feature_types = self.parse_feature_types + self.other_feature_types + self.miss_spelling_feature_types + self.authorship_feature_types + self.classification_feature_types
         
     def load(self):
         orig = prData(self.excelfile, 0)
@@ -374,19 +379,52 @@ class VertNetCorpus:
             
         fio.WriteMatrix(output, body, head)
     
-    def get_classification_path_feature(self, all_name_strings, output):
-        vertnet_name = set( self.get_names() )
+    def get_name_ids(self, output):
+        vertnet_names_index = '../data/vertnet_names_index.txt'
+        header, body = fio.ReadMatrix(vertnet_names_index, hasHead=True)
         
-        body = []
-        for i, line in enumerate( codecs.open(all_name_strings, 'r', 'utf-8') ):
-            name = line.rstrip(' \r\n')
+        all_name_strings_ids = '../data/all_name_strings.id_list'
+        ids = fio.ReadFile(all_name_strings_ids)
+        
+        data = {}
+        for row in body:
+            index, name = row
             
-            if name in vertnet_name:
-                print i
-                body.append([i, name])
+            data[name.rstrip()] = ids[int(index.rstrip())].rstrip(' \r\n')
         
-        fio.WriteMatrix(output, body, header = ['index', 'name'])
+        with codecs.open(output, 'w', 'utf-8') as fout:
+            json.dump(data, fout, indent=2)
+            
+    def get_classification_path_feature(self, db, vertnet_name_ids, output):
+        with codecs.open(vertnet_name_ids, 'r', 'utf-8') as fin:
+            data = json.load(fin)
         
+        head = ['has_classification_path', 'synonym', 'data_sources']
+        body = []
+        for name in self.get_names():
+            if name in data:
+                name_id = int(data[name])
+                
+                has_classification_path, synonym, data_sources = db.get_classification_features_from_id(name_id)
+                
+                if has_classification_path == None: has_classification_path = 0
+                if synonym == None: synonym = 0
+                
+                len_source = 0
+                if data_sources == None: 
+                    len_source = 0
+                else:
+                    len_source = len(data_sources.split(','))
+                
+                row = [has_classification_path, synonym, len_source]
+                
+            else:
+                row = [0, 0, 0]
+            
+            body.append(row)
+        
+        fio.WriteMatrix(output, body, head)
+            
     def write_feature(self, feature_keys = None, feature_types = None, output=None):
         if feature_keys == None:
             feature_keys = self.feature_keys
@@ -417,8 +455,8 @@ class VertNetCorpus:
         #self.write_feature(self.miss_spelling_features, self.miss_spelling_feature_types, output='misspelling')
         #self.write_feature(self.feature_keys, self.feature_types, output='parse_netiti_taxonfinder_misspelling')
         
-        self.write_feature(self.authorship_features, self.authorship_feature_types, output='authorship')
-        self.write_feature(self.feature_keys, self.feature_types, output='parse_netiti_taxonfinder_misspelling_authorship')
+        self.write_feature(self.classification_features, self.classification_feature_types, output='classification')
+        self.write_feature(self.feature_keys, self.feature_types, output='parse_netiti_taxonfinder_misspelling_authorship_classification')
         
 if __name__ == '__main__':
     import ConfigParser
@@ -465,8 +503,16 @@ if __name__ == '__main__':
     id_file = os.path.join(datadir, 'all_name_strings.id_list')
     all_name_strings = os.path.join(datadir, 'all_name_strings.txt')
     
-    vertnet_names = os.path.join(datadir, 'vertnet_names.txt')
+    vertnet_name_ids = os.path.join(datadir, 'vertnet_names_ids.txt')
+    #corpus.get_name_ids(vertnet_name_ids)
     
-    print vertnet_names
-    corpus.get_classification_path_feature(all_name_strings, output)
-    #corpus.test_feature()
+    host = config.get('mysql', 'host')
+    user = config.get('mysql', 'user')
+    passwd = config.get('mysql', 'passwd')
+    db = config.get('mysql', 'db')
+    db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
+    
+    vertnet_classfication_feature = os.path.join(datadir, 'vertnet_classfication_feature.txt')
+    #corpus.get_classification_path_feature(db, vertnet_name_ids, vertnet_classfication_feature)
+    
+    corpus.test_feature()
