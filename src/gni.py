@@ -85,6 +85,65 @@ class GNI_DB:
 			except:
 				print "Error: unable to fecth data"	
 	
+	def get_simple_badname_ids(self, limit=1000):
+		size = 10000
+		last_id = 0
+		
+		while True:
+			sql = 'SELECT id, comment FROM name_string_refinery WHERE id > '+str(last_id)+' AND (has_question_mark = 1 OR parsed = 0 OR hybrid=1 OR surrogate=1 OR has_ignored=1) ORDER BY id LIMIT '+str(size)
+			
+			try:
+				cursor = self.execute_sql(sql)
+				N = cursor.rowcount
+				if N==0:break
+				if limit != None and last_id >= limit: break
+				
+				for i in range(N):
+					row = cursor.fetchone()
+					last_id = row[0]
+					yield row
+			except Exception as e:
+				print e
+				print "Error: unable to fecth data"	
+		
+	def get_name_string_from_id(self, id):
+		sql = 'SELECT name FROM name_strings WHERE id = %d' % (id)
+		try:
+			cursor = self.execute_sql(sql)
+			N = cursor.rowcount
+			if N==0: return None
+			
+			row = cursor.fetchone()
+			name = row[0]
+		except Exception as e:
+			print e
+			print "Error: unable to fecth data"	
+			name = None
+			
+		return name
+	
+	def add_empty_feature_id(self, feature_name, limit=1000):
+		#the first columne of the row should be id
+		size = 1000
+		last_id = 0
+		
+		while True:
+			sql = 'SELECT id FROM name_string_refinery WHERE '+feature_name+' is NULL AND id > '+str(last_id)+' ORDER BY id LIMIT '+str(size)
+			
+			try:
+				cursor = self.execute_sql(sql)
+				N = cursor.rowcount
+				if N==0:break
+				if limit != None and last_id >= limit: break
+				
+				for i in range(N):
+					row = cursor.fetchone()
+					last_id = row[0]
+					yield row
+			except Exception as e:
+				print e
+				print "Error: unable to fecth data"	
+	
 	def get_parsed_name_strings(self, limit=1000):
 		size = 10000
 		last_id = 0

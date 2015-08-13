@@ -1,15 +1,15 @@
-import fio
+import file_util as fio
 import os
 from collections import defaultdict
 import json
 import codecs
 import numpy as np
-from get_misspell_feature_for_all_names import generator_all_name_strings
-from VertNet import VerNetCorpus
+from get_all_parser_featurs_for_all_names import generator_all_name_strings
+from VertNet import VertNetCorpus
 import sys
 
 def get_simple_features(parser_output, output):
-    vertnet = VerNetCorpus()
+    vertnet = VertNetCorpus()
     
     f_fun = [vertnet.has_question_mark, vertnet.all_caplitized]
     

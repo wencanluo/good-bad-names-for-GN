@@ -374,6 +374,19 @@ class VertNetCorpus:
             
         fio.WriteMatrix(output, body, head)
     
+    def get_classification_path_feature(self, all_name_strings, output):
+        vertnet_name = set( self.get_names() )
+        
+        body = []
+        for i, line in enumerate( codecs.open(all_name_strings, 'r', 'utf-8') ):
+            name = line.rstrip(' \r\n')
+            
+            if name in vertnet_name:
+                print i
+                body.append([i, name])
+        
+        fio.WriteMatrix(output, body, header = ['index', 'name'])
+        
     def write_feature(self, feature_keys = None, feature_types = None, output=None):
         if feature_keys == None:
             feature_keys = self.feature_keys
@@ -417,7 +430,7 @@ if __name__ == '__main__':
     
     vernet_corpus = os.path.join(datadir, 'testset', 'VertNetTaxonomyTestSet_clean.xls')
     
-    corpus = VerNetCorpus(vernet_corpus)
+    corpus = VertNetCorpus(vernet_corpus)
     
     #corpus.error_analysis_by_source()
     
@@ -449,4 +462,11 @@ if __name__ == '__main__':
     authorship_features = os.path.join(datadir, 'authorship_features.txt')
     #corpus.get_authorship_features(parsedfile, canonical_database, authorship_features)
     
-    corpus.test_feature()
+    id_file = os.path.join(datadir, 'all_name_strings.id_list')
+    all_name_strings = os.path.join(datadir, 'all_name_strings.txt')
+    
+    vertnet_names = os.path.join(datadir, 'vertnet_names.txt')
+    
+    print vertnet_names
+    corpus.get_classification_path_feature(all_name_strings, output)
+    #corpus.test_feature()

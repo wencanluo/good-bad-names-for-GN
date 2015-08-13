@@ -44,8 +44,7 @@ class Parser:
                             dict['year'] = year
                                                
         yield dict
-        
-        
+          
     def extract_parser_features_from_string(self, data_string):
         data = json.loads(data_string, encoding = 'utf-8')
         
