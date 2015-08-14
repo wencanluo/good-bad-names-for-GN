@@ -36,11 +36,14 @@ class VertNetCorpus:
         self.classification_features =      ['has_classification_path', 'synonym',      'data_sources']
         self.classification_feature_types = ['Category',                'Category',     'Continuous']
         
-        self.other_features = ['NetiNeti', 'TaxonFinder', 'has_question_mark', 'all_caplitized']
+        self.simple_features = ['has_question_mark', 'all_caplitized']
+        self.simple_feature_types = ['Category']*len(self.simple_features)
+        
+        self.other_features = ['NetiNeti', 'TaxonFinder']
         self.other_feature_types = ['Category']*len(self.other_features)
         
-        self.feature_keys = self.parse_features + self.other_features + self.miss_spelling_features + self.authorship_features + self.classification_features
-        self.feature_types = self.parse_feature_types + self.other_feature_types + self.miss_spelling_feature_types + self.authorship_feature_types + self.classification_feature_types
+        self.feature_keys = self.other_features + self.simple_features + self.parse_features +  self.miss_spelling_features + self.authorship_features + self.classification_features
+        self.feature_types = self.other_feature_types +self.simple_feature_types + self.parse_feature_types +  self.miss_spelling_feature_types + self.authorship_feature_types + self.classification_feature_types
         
     def load(self):
         orig = prData(self.excelfile, 0)
@@ -455,8 +458,13 @@ class VertNetCorpus:
         #self.write_feature(self.miss_spelling_features, self.miss_spelling_feature_types, output='misspelling')
         #self.write_feature(self.feature_keys, self.feature_types, output='parse_netiti_taxonfinder_misspelling')
         
-        self.write_feature(self.classification_features, self.classification_feature_types, output='classification')
+        #self.write_feature(self.classification_features, self.classification_feature_types, output='classification')
         self.write_feature(self.feature_keys, self.feature_types, output='parse_netiti_taxonfinder_misspelling_authorship_classification')
+        
+        #self.write_feature(self.classification_features + self.parse_features, 
+        #                   self.classification_feature_types + self.parse_feature_types,
+        #                   output= 'classification_parser'
+        #                   )
         
 if __name__ == '__main__':
     import ConfigParser

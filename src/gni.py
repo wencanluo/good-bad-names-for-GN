@@ -90,7 +90,7 @@ class GNI_DB:
 		last_id = 0
 		
 		while True:
-			sql = 'SELECT * FROM name_string_refinery WHERE id > '+str(last_id)+' AND (has_question_mark = 1 OR parsed = 0 OR hybrid=1 OR surrogate=1 OR has_ignored=1) ORDER BY id LIMIT '+str(size)
+			sql = 'SELECT * FROM name_string_refinery WHERE id > '+str(last_id)+' ORDER BY id LIMIT '+str(size)
 			
 			try:
 				cursor = self.execute_sql(sql)
@@ -105,6 +105,28 @@ class GNI_DB:
 			except Exception as e:
 				print e
 				print "Error: unable to fecth data"
+	
+	def get_bad_names(self, limit=1000):
+		size = 10000
+		last_id = 0
+		
+		while True:
+			sql = 'SELECT id, synonym, data_sources, comment FROM name_string_refinery WHERE id > '+str(last_id)+' AND (has_question_mark = 1 OR parsed = 0 OR hybrid=1 OR surrogate=1 OR has_ignored=1) ORDER BY id LIMIT '+str(size)
+			
+			try:
+				cursor = self.execute_sql(sql)
+				N = cursor.rowcount
+				if N==0:break
+				if limit != None and last_id >= limit: break
+				
+				for i in range(N):
+					row = cursor.fetchone()
+					last_id = row[0]
+					yield row
+			except Exception as e:
+				print e
+				print "Error: unable to fecth data"	
+	
 		
 	def get_simple_badname_ids(self, limit=1000):
 		size = 10000
@@ -126,7 +148,40 @@ class GNI_DB:
 			except Exception as e:
 				print e
 				print "Error: unable to fecth data"	
+	
+	def get_goodbad_label(self, id):
+		sql = 'SELECT good_bad, comment FROM name_string_refinery WHERE id = %d' % id
+		try:
+			cursor = self.execute_sql(sql)
+			N = cursor.rowcount
+			if N==0: return None
+			
+			row = cursor.fetchone()
+			
+		except Exception as e:
+			print e
+			print "Error: unable to fecth data"
+			row = None
+			
+		return row
+	
+	def update_table(self, table_name, id, features, keys):
+		assert(len(features) == len(keys))
 		
+		key_feature_pair = []
+		for key, feature in zip(keys, features):
+			key_feature_pair.append('='.join([key, feature]))
+
+		sql = 'UPDATE %s SET %s WHERE id = %d' % (table_name, ','.join(key_feature_pair), id)
+
+		try:
+			cursor = self.execute_sql(sql)
+			N = cursor.rowcount
+		except Exception as e:
+			print e
+			print dict
+			print "Error: unable to insert data"
+	
 	def get_name_string_from_id(self, id):
 		sql = 'SELECT name FROM name_strings WHERE id = %d' % (id)
 		try:
