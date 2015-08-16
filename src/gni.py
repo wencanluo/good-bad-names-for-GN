@@ -85,6 +85,21 @@ class GNI_DB:
 			except:
 				print "Error: unable to fecth data"	
 	
+	def get_columns_from_a_table_by_id(self, id, columns, table, index='id'):
+		sql = 'SELECT %s FROM %s WHERE %s = %d' % (columns, table, index, id)
+		try:
+			cursor = self.execute_sql(sql)
+			N = cursor.rowcount
+			if N==0: return None
+			
+			row = cursor.fetchone()
+		except Exception as e:
+			print e
+			print "Error: unable to fecth data"	
+			row = None
+			
+		return row
+		
 	def get_all_features_from_name_string_refinery(self, limit=1000):
 		size = 10000
 		last_id = 0
@@ -234,6 +249,22 @@ class GNI_DB:
 			
 		return name
 	
+	def get_classification_path_from_id(self, id):
+		sql = 'SELECT classification_path_ranks FROM name_string_indices WHERE name_string_id = %d' % (id)
+		try:
+			cursor = self.execute_sql(sql)
+			N = cursor.rowcount
+			if N==0: return None
+			
+			
+			row = cursor.fetchone()
+			name = row[0]
+		except Exception as e:
+			print e
+			print "Error: unable to fecth data"	
+			name = None
+			
+		return name
 	
 	def get_classification_features_from_id(self, id):
 		sql = 'SELECT has_classification_path, synonym, data_sources FROM name_string_refinery WHERE id = %d' % (id)
@@ -242,14 +273,18 @@ class GNI_DB:
 			N = cursor.rowcount
 			if N==0: return None
 			
-			row = cursor.fetchone()
+			for i in range(N):
+				row = cursor.fetchone()
+				path = row[0]
+				if path != None:
+					return path
 			
 		except Exception as e:
 			print e
 			print "Error: unable to fecth data"	
 			row = None
 			
-		return row
+		return ""
 	
 	def add_empty_feature_id(self, feature_name, limit=1000):
 		#the first columne of the row should be id

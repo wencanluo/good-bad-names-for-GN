@@ -148,5 +148,5 @@ if __name__ == '__main__':
     #get_name_source_info(db, name_source_info)
     
     name_source_rate = os.path.join(datadir, 'name_source_rate.txt')
-    rate_sources(db, name_source_info, name_source_rate)
+    #rate_sources(db, name_source_info, name_source_rate)
     
