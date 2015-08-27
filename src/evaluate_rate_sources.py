@@ -186,7 +186,10 @@ def get_data_source_connections(name_source_info, data_source_connections):
         n = len(sources)
         
         if n==1:#unique for this source
-            data[str(source)] += 11
+            data[str(source)] += 1
+        
+        for source in sources:
+            data['total@%s'%source] += 1
         
         for i in range(n):
             for j in range(i+1, n):
@@ -204,6 +207,7 @@ def matrix_source_connections(data_source_connections, output):
     for key in data:
         sources = key.split('@')
         for source in sources:
+            if source == 'total': continue
             allsources.append(int(source))
     
     allsources = sorted(set(allsources))
@@ -226,7 +230,7 @@ def matrix_source_connections(data_source_connections, output):
                 
             row.append(count)
         
-        total = np.sum(row[1:])
+        total = data['total@%d'%allsources[i]]
         
         closest = i+1
         max = 0
@@ -277,7 +281,6 @@ if __name__ == '__main__':
     #get_data_source_connections(name_source_info, data_source_connections)
     
     data_source_connections_matrix = os.path.join(datadir, 'data_source_connections_matrix.txt')
-    
     matrix_source_connections(data_source_connections, data_source_connections_matrix)
     
     
