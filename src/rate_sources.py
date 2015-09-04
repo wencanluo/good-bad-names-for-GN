@@ -144,8 +144,8 @@ if __name__ == '__main__':
     #get_bad_name_info(db, bad_name_info)
     #get_sample_badname(db, bad_name_info)
     
-    name_source_info = os.path.join(datadir, 'name_source_info.txt')
-    #get_name_source_info(db, name_source_info)
+    name_source_info = os.path.join(datadir, 'name_source_info_round2.txt')
+    get_name_source_info(db, name_source_info)
     
     name_source_rate = os.path.join(datadir, 'name_source_rate.txt')
     #rate_sources(db, name_source_info, name_source_rate)

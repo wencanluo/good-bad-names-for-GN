@@ -143,12 +143,15 @@ def evaluate_rate_sources(db, name_source_info, output):
                 dict[source]['bad'] += 1
                 
                 if comment != 'None':
+                    comment = comment.replace('predict2', 'predict')
                     comments = comment.split(',')
                     if 'rules' in comments:
                         dict[source]['bad_rules'] += 1
                     
                     if 'predict' in comments:
                         dict[source]['bad_predict'] += 1
+                else:
+                    print "no comment"
                         
                 if synonym != '1':
                     dict[source]['bad_not_synonym'] += 1
@@ -267,13 +270,15 @@ if __name__ == '__main__':
     data_sources = os.path.join(datadir, 'data_sources.txt')
     data_sources_ratios = os.path.join(datadir, 'data_sources_ratio.txt')
     
-    name_source_info = os.path.join(datadir, 'name_source_info.txt')
+    name_source_info = os.path.join(datadir, 'name_source_info_round2.txt')
     
     outputdir = os.path.join(datadir, 'examples')
     #get_ids_from_data_sources(name_source_info, data_sources, outputdir)
     
     #random_pick_examples(data_sources, data_sources_ratios, outputdir)
-    #rate_sources(db, name_source_info, name_source_rate)
+    
+    name_source_rate = os.path.join(datadir, 'data_source_rates_round2.txt')
+    evaluate_rate_sources(db, name_source_info, name_source_rate)
     
     #get_annotated_examples(db, data_sources, outputdir)
     
@@ -281,6 +286,6 @@ if __name__ == '__main__':
     #get_data_source_connections(name_source_info, data_source_connections)
     
     data_source_connections_matrix = os.path.join(datadir, 'data_source_connections_matrix.txt')
-    matrix_source_connections(data_source_connections, data_source_connections_matrix)
+    #matrix_source_connections(data_source_connections, data_source_connections_matrix)
     
     

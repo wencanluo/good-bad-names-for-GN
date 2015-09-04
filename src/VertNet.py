@@ -459,7 +459,7 @@ class VertNetCorpus:
         #self.write_feature(self.feature_keys, self.feature_types, output='parse_netiti_taxonfinder_misspelling')
         
         #self.write_feature(self.classification_features, self.classification_feature_types, output='classification')
-        self.write_feature(self.feature_keys, self.feature_types, output='parse_netiti_taxonfinder_misspelling_authorship_classification')
+        self.write_feature(self.feature_keys, self.feature_types, output='parse_netiti_taxonfinder_misspelling_authorship_classification_gn')
         
         #self.write_feature(self.classification_features + self.parse_features, 
         #                   self.classification_feature_types + self.parse_feature_types,
