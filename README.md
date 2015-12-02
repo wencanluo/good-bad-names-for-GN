@@ -24,6 +24,8 @@ Classify the Scientific names database as 'trusted' or 'not trusted'
     
 ### step by step to produce the results
 #### 1. generate the feature table (name_string_refinery)
+     Feature explaination
+     https://docs.google.com/document/d/1mblzmi1o0dm70OSvR0qR7vrQ69KBONw_wroArRMeCPc/edit
 #### 2. build the good-bad classifier
 #### 3. run the classifier
 #### 4. write back the predictions into the table
