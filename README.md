@@ -12,7 +12,7 @@ Classify the Scientific names database as 'trusted' or 'not trusted'
 ## How to run it?
 ### requirements
   * MySQL
-  * python
+  * python 2.7
   * Java
   * Netiti
   * TaxonFinder
