@@ -9,3 +9,24 @@ Classify the Scientific names database as 'trusted' or 'not trusted'
 [1]: https://badges.gitter.im/Join%20Chat.svg
 [2]: https://gitter.im/wencanluo/good-bad-names-for-GN?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
 
+## How to run it?
+### requirements
+  MySQL
+
+  python
+    
+  Java
+  
+  Netiti
+  TaxonFinder
+  Parser
+  Data
+    GN database
+    VertNet data
+    datasource authority
+    
+### step by step to produce the results
+#### 1. generate the feature table (name_string_refinery)
+#### 2. build the good-bad classifier
+#### 3. run the classifier
+#### 4. write back the predictions into the table
