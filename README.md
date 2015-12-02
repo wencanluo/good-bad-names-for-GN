@@ -11,19 +11,16 @@ Classify the Scientific names database as 'trusted' or 'not trusted'
 
 ## How to run it?
 ### requirements
-  MySQL
-
-  python
-    
-  Java
-  
-  Netiti
-  TaxonFinder
-  Parser
-  Data
-    GN database
-    VertNet data
-    datasource authority
+  * MySQL
+  * python
+  * Java
+  * Netiti
+  * TaxonFinder
+  * Parser
+  * Data
+    * GN database
+    * VertNet data
+    * datasource authority
     
 ### step by step to produce the results
 #### 1. generate the feature table (name_string_refinery)
