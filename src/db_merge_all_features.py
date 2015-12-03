@@ -282,20 +282,19 @@ if __name__ == '__main__':
     misspelling_authorship = os.path.join(datadir, 'all_name_strings.misspelling_authorship')
     
     id_list = os.path.join(datadir, 'all_name_strings.id_list')
-    #get_id_list(misspelling_authorship, id_list)
     
     db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
     
     debug = False
     
-    #add_netineti(db, id_list, netineti)
-    #add_taxon(db, id_list, taxon)
-    #add_features(db, id_list, simple_features, ['has_question_mark', 'all_caplitized'])
+    add_netineti(db, id_list, netineti)
+    add_taxon(db, id_list, taxon)
+    add_features(db, id_list, simple_features, ['has_question_mark', 'all_caplitized'])
     
-    #add_parser_feature(db)
+    add_parser_feature(db)
     
     all_name_strings_id_combined = os.path.join(datadir, 'all_name_strings_id_combined.txt')
-    #add_source_feature(db, all_name_strings_id_combined)
+    add_source_feature(db, all_name_strings_id_combined)
     
-    missed_id = os.path.join(datadir, 'missed_id.txt')
-    get_missed_id(db, missed_id)
+#     missed_id = os.path.join(datadir, 'missed_id.txt')
+#     get_missed_id(db, missed_id)

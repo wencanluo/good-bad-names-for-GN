@@ -97,7 +97,7 @@ if __name__ == '__main__':
     db = config.get('mysql', 'db')
     
     datadir = config.get('dir', 'data')
-    genus_input = os.path.join(datadir, 'genus_one.txt')
-    genus_output = os.path.join(datadir, 'genus_one_suggest.txt')
+    genus_input = os.path.join(datadir, 'genus.txt')
+    genus_output = os.path.join(datadir, 'genus_suggested_by_google.txt')
     
     get_possible_miss_spelled_genus(genus_input, genus_output)

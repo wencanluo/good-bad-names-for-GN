@@ -74,6 +74,9 @@ def get_simple_bad_names(parser_output, datadir):
     fio.SaveDict(dict, os.path.join(datadir, 'bad_name_count.txt'), True)
 
 def get_all_name_strings(parser_output, output):
+    '''
+    Get the names of the names
+    '''
     fout = codecs.open(output, 'w', 'utf-8')
     
     line_count = 0
@@ -100,6 +103,10 @@ def get_all_name_strings(parser_output, output):
     fout.close()
 
 def get_all_ids(parser_output, output):
+    '''
+    Get only the id of the names
+    '''
+    
     fout = codecs.open(output, 'w', 'utf-8')
     
     line_count = 0
@@ -232,7 +239,7 @@ def gather_data_info(db, datadir):
                     dicts[author_index][item] += 1
                 
     for i, info in enumerate(infos):
-        fio.SaveDictSimple(dicts[i], os.path.join(datadir, 'info_'+info+'.txt'), SortbyValueflag=True)
+        fio.SaveDictSimple(dicts[i], os.path.join(datadir, info+'.txt'), SortbyValueflag=True)
 
 def gather_data_info_genus_species(db, datadir):
     #sys.s = codecs.open(parser_output, 'w', 'utf-8')
@@ -395,14 +402,20 @@ if __name__ == '__main__':
     db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
     
     import os
+    
+    #Exact the name list
     parser_output = os.path.join(datadir, 'parser_info.txt')
+    get_parser_data(db, parser_output)
+    
+    all_name_string = os.path.join(datadir, 'all_name_strings.txt')
+    get_all_name_strings(parser_output, all_name_string)
     
     id_file = os.path.join(datadir, 'all_name_strings.id_list')
     get_all_ids(parser_output, id_file)
-    #get_parser_data(db, parser_output)
+    
     #get_simple_bad_names(parser_output, datadir)
 
-    #gather_data_info_genus_species(db, datadir)
+    gather_data_info_genus_species(db, datadir)
     
     #get_same_name_but_different_author(db, datadir)
     #get_different_name_but_same_author(db, datadir)
@@ -412,10 +425,8 @@ if __name__ == '__main__':
     #get_same_name_but_different_author_for_VertNet(db, datadir, vernet_canonical)
     
     all_name_string_id = os.path.join(datadir, 'name_string_all_indices.txt')
-    #get_all_name_strings_id(parser_output, all_name_string_id)
-    
+    get_all_name_strings_id(parser_output, all_name_string_id)
     
     all_name_strings_id_combined = os.path.join(datadir, 'all_name_strings_id_combined.txt')
-    #combine_name_sources(id_file, all_name_string_id, all_name_strings_id_combined)
+    combine_name_sources(id_file, all_name_string_id, all_name_strings_id_combined)
     
-    #check_id_order(all_name_string_id)

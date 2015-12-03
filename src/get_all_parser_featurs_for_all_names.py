@@ -232,11 +232,11 @@ if __name__ == '__main__':
     id_file = os.path.join(datadir, 'all_name_strings_id.txt')
     
     output = os.path.join(datadir, 'all_name_strings.misspelling_authorship')
-#     get_misspelling_authorship_features(db, id_file, genus_file, species_file, genus_species_file, 
-#                                  genus_suggested_by_google, genus_suggested_by_dl, genus_suggested_by_both,
-#                                  species_suggested_by_dl,
-#                                  canonical_database,
-#                                  output
-#                                  )
+    get_misspelling_authorship_features(db, id_file, genus_file, species_file, genus_species_file, 
+                                 genus_suggested_by_google, genus_suggested_by_dl, genus_suggested_by_both,
+                                 species_suggested_by_dl,
+                                 canonical_database,
+                                 output
+                                 )
     insert_to_db(db, output)
     
