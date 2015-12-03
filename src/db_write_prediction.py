@@ -325,7 +325,7 @@ if __name__ == '__main__':
     #simple_badname_id = os.path.join(datadir, 'simple_badname_id.txt')
     #add_simplebadnames_ids(db, simple_badname_id)
     
-    new_gn_testset = os.path.join(datadir, 'gn_testset.txt')
+    #new_gn_testset = os.path.join(datadir, 'gn_testset.txt')
     gn_train = os.path.join(datadir, 'gn_train.txt')
     gn_test = os.path.join(datadir, 'gn_test.txt')
     
@@ -333,6 +333,8 @@ if __name__ == '__main__':
     get_gn_weka_file(db, gn_train, gn_test)
     
     outputdir = os.path.join(datadir, 'weka', 'names')
-    #get_weka_files(db, outputdir)
-        
-    get_predictbad_name_ids(db, outputdir)
+    get_weka_files(db, outputdir)
+    
+     
+    #run the following function after you got the prediction  
+    #get_predictbad_name_ids(db, outputdir)

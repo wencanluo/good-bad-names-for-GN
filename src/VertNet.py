@@ -478,49 +478,49 @@ if __name__ == '__main__':
     
     corpus = VertNetCorpus(vernet_corpus)
     
-    #corpus.error_analysis_by_source()
-    
-    parsedfile = os.path.join(datadir, 'testset', 'vernet_parsed.json')
-    #corpus.get_parse_features(parsedfile)
-    
-    genus_file = os.path.join(datadir, 'genus.txt')
-    species_file = os.path.join(datadir, 'species.txt')
-    genus_species_file = os.path.join(datadir, 'info_genus_species.txt')
-    
-    genus_suggested_by_google = os.path.join(datadir, 'genus_suggested_by_google.txt')
-    genus_suggested_by_dl = os.path.join(datadir, 'genus_suggested_by_dl.txt')
-    genus_suggested_by_both = os.path.join(datadir, 'genus_suggested_by_both.txt')
-    species_suggested_by_dl = os.path.join(datadir, 'species_suggested_by_dl.txt')
-                                 
-    output = os.path.join(datadir, 'misspelling_log.txt')
-#     corpus.get_misspelling_features(parsedfile, genus_file, species_file, genus_species_file, 
-#                                  genus_suggested_by_google, genus_suggested_by_dl, genus_suggested_by_both,
-#                                  species_suggested_by_dl,
-#                                  output
-#                                  )
-    
-    
-    vernet_canonical = os.path.join(datadir, 'vernet_canonical.json')
-    #corpus.get_canonical_names(parsedfile, output)
-    
-    canonical_database = os.path.join(datadir, 'same_name_but_different_author_vertnet.json')
-    
-    authorship_features = os.path.join(datadir, 'authorship_features.txt')
-    #corpus.get_authorship_features(parsedfile, canonical_database, authorship_features)
-    
-    id_file = os.path.join(datadir, 'all_name_strings.id_list')
-    all_name_strings = os.path.join(datadir, 'all_name_strings.txt')
-    
-    vertnet_name_ids = os.path.join(datadir, 'vertnet_names_ids.txt')
-    #corpus.get_name_ids(vertnet_name_ids)
-    
-    host = config.get('mysql', 'host')
-    user = config.get('mysql', 'user')
-    passwd = config.get('mysql', 'passwd')
-    db = config.get('mysql', 'db')
-    db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
-    
-    vertnet_classfication_feature = os.path.join(datadir, 'vertnet_classfication_feature.txt')
+#     #corpus.error_analysis_by_source()
+#     
+#     parsedfile = os.path.join(datadir, 'testset', 'vernet_parsed.json')
+#     #corpus.get_parse_features(parsedfile)
+#     
+#     genus_file = os.path.join(datadir, 'genus.txt')
+#     species_file = os.path.join(datadir, 'species.txt')
+#     genus_species_file = os.path.join(datadir, 'info_genus_species.txt')
+#     
+#     genus_suggested_by_google = os.path.join(datadir, 'genus_suggested_by_google.txt')
+#     genus_suggested_by_dl = os.path.join(datadir, 'genus_suggested_by_dl.txt')
+#     genus_suggested_by_both = os.path.join(datadir, 'genus_suggested_by_both.txt')
+#     species_suggested_by_dl = os.path.join(datadir, 'species_suggested_by_dl.txt')
+#                                  
+#     output = os.path.join(datadir, 'misspelling_log.txt')
+# #     corpus.get_misspelling_features(parsedfile, genus_file, species_file, genus_species_file, 
+# #                                  genus_suggested_by_google, genus_suggested_by_dl, genus_suggested_by_both,
+# #                                  species_suggested_by_dl,
+# #                                  output
+# #                                  )
+#     
+#     
+#     vernet_canonical = os.path.join(datadir, 'vernet_canonical.json')
+#     #corpus.get_canonical_names(parsedfile, output)
+#     
+#     canonical_database = os.path.join(datadir, 'same_name_but_different_author_vertnet.json')
+#     
+#     authorship_features = os.path.join(datadir, 'authorship_features.txt')
+#     #corpus.get_authorship_features(parsedfile, canonical_database, authorship_features)
+#     
+#     id_file = os.path.join(datadir, 'all_name_strings.id_list')
+#     all_name_strings = os.path.join(datadir, 'all_name_strings.txt')
+#     
+#     vertnet_name_ids = os.path.join(datadir, 'vertnet_names_ids.txt')
+#     #corpus.get_name_ids(vertnet_name_ids)
+#     
+#     host = config.get('mysql', 'host')
+#     user = config.get('mysql', 'user')
+#     passwd = config.get('mysql', 'passwd')
+#     db = config.get('mysql', 'db')
+#     db = GNI_DB(host=host, user=user, passwd=passwd, db=db)
+#     
+    #vertnet_classfication_feature = os.path.join(datadir, 'vertnet_classfication_feature.txt')
     #corpus.get_classification_path_feature(db, vertnet_name_ids, vertnet_classfication_feature)
     
     corpus.test_feature()
