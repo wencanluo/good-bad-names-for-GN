@@ -285,7 +285,7 @@ def format_authors_year(authors, year):
     
     return json.dumps(dict)
     
-def get_same_name_but_different_author(db, datadir):
+def get_same_name_but_different_author(db, datadir, output):
     parser = Parser()
     keys = ['authors', 'year', 'canonical']
     
@@ -315,7 +315,7 @@ def get_same_name_but_different_author(db, datadir):
             diff_dict[k] = v
     '''
     
-    with codecs.open(os.path.join(datadir, 'same_name_but_different_author_all.txt'), 'w', 'utf-8') as fout:
+    with codecs.open(output, 'w', 'utf-8') as fout:
         json.dump(dict, fout, indent=2)
 
 def get_same_name_but_different_author_for_VertNet(db, datadir, vernet_canonical):
@@ -417,11 +417,12 @@ if __name__ == '__main__':
 
     gather_data_info_genus_species(db, datadir)
     
-    #get_same_name_but_different_author(db, datadir)
+    same_name_but_different_author_all = os.path.join(datadir, 'same_name_but_different_author_all.txt')
+    get_same_name_but_different_author(db, datadir, same_name_but_different_author_all)
+    
     #get_different_name_but_same_author(db, datadir)
     
     #vernet_canonical = os.path.join(datadir, 'vernet_canonical.json')
-    
     #get_same_name_but_different_author_for_VertNet(db, datadir, vernet_canonical)
     
     all_name_string_id = os.path.join(datadir, 'name_string_all_indices.txt')

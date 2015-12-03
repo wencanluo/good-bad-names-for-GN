@@ -136,8 +136,8 @@ if __name__ == '__main__':
     
     datadir = config.get('dir', 'data')
     genus = os.path.join(datadir, 'genus.txt')
-    genus_google = os.path.join(datadir, 'genus_spell_checked.txt')
+    genus_google = os.path.join(datadir, 'genus_suggested_by_google.txt')
     genus_ld = os.path.join(datadir, 'genus_suggested_by_dl.txt')
-    output = os.path.join(datadir, 'genus_suggested.txt')
+    output = os.path.join(datadir, 'genus_suggested_by_both.txt')
     
     get_miss_spelled(genus, genus_google, genus_ld, output)    

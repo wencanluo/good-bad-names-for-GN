@@ -330,11 +330,9 @@ if __name__ == '__main__':
     gn_test = os.path.join(datadir, 'gn_test.txt')
     
     #split_new_data(new_gn_testset, gn_train, gn_test)
-    #get_gn_weka_file(db, gn_train, gn_test)
+    get_gn_weka_file(db, gn_train, gn_test)
     
     outputdir = os.path.join(datadir, 'weka', 'names')
     #get_weka_files(db, outputdir)
-    
-    #fixed_weka_file(outputdir)
-    
+        
     get_predictbad_name_ids(db, outputdir)
